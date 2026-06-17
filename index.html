@@ -8,7 +8,7 @@
 <!-- Display-Font (online). Fällt offline sauber auf System-Font zurück. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,700;0,900;1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,700;0,900;1,900&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================
@@ -51,16 +51,23 @@ sup{ font-size:.45em; vertical-align:super; }
 
 /* ============================ HERO ============================ */
 #hero{ position:relative; height:100vh; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center; overflow:hidden; }
+  align-items:center; justify-content:center; text-align:center; overflow:hidden;
+  background:radial-gradient(135% 120% at 16% 10%,
+    #ffc673 0%, #ff9a8e 30%, #ff77b0 52%, #ec5fc6 72%, #aa63d8 100%); }
 .brand{ position:absolute; top:22px; left:24px; width:clamp(78px,9vw,118px); z-index:4; }
 .valid-badge{ position:absolute; top:24px; right:24px; z-index:4; background:#e60012;
   color:#fff; font-weight:900; text-transform:uppercase; line-height:1.15;
   padding:10px 14px; border-radius:8px; font-size:clamp(10px,1.2vw,14px);
   text-align:left; max-width:150px; box-shadow:0 8px 24px rgba(0,0,0,.3); }
-.wow{ font-family:var(--display); line-height:.78; letter-spacing:.01em;
-  font-size:clamp(72px, 17vw, 220px); color:#fff; transform:rotate(-3deg);
-  -webkit-text-stroke:clamp(2px,.45vw,5px) var(--magenta); paint-order:stroke fill;
-  text-shadow:0 12px 30px rgba(225,0,113,.45); will-change:transform; }
+.wow{ font-family:"Fredoka", var(--display); font-weight:700; line-height:.82;
+  letter-spacing:-.01em; font-size:clamp(84px, 19vw, 260px); color:#fff;
+  transform:rotate(-4deg) skewX(-4deg); margin:6px 0 2px;
+  -webkit-text-stroke:clamp(5px,1vw,11px) #ff5f2e; paint-order:stroke fill;
+  text-shadow:
+    7px 9px 0 var(--pink),
+    13px 17px 0 var(--magenta),
+    20px 26px 26px rgba(120,0,80,.38);
+  will-change:transform; }
 .hero-car{ width:min(520px,78vw); margin-top:8px;
   filter:drop-shadow(0 22px 30px rgba(0,0,0,.3)); }
 .offerbar{ display:inline-flex; align-items:center; gap:18px; background:#e60012;
@@ -191,9 +198,9 @@ footer strong{ color:#cfcdda; }
 
 <!-- ================= HERO ================= -->
 <section id="hero" data-label="Start">
-  <img class="brand" src="assets/logo-mitsubishi.svg" alt="Mitsubishi Motors">
+  <img class="brand" src="assets/logo-mitsubishi-black.svg" alt="Mitsubishi Motors">
   <div class="valid-badge">WOW-Angebote gültig bis 31.12.2026</div>
-  <h1 class="wow">WOW!</h1>
+  <h1 class="wow">WoW!</h1>
   <img class="hero-car" src="assets/cars/outlander.svg" alt="Outlander Diamant">
   <div class="offerbar">
     <span class="ob-anz">Ohne<br>Anzahlung</span>
