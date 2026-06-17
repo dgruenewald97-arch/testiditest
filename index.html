@@ -26,8 +26,11 @@
   --back:cubic-bezier(.2,1.5,.35,1);
 }
 *{ box-sizing:border-box; margin:0; padding:0; }
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; scroll-snap-type:y mandatory; }
 body{ font-family:var(--text); color:#fff; background:#0c0a12; overflow-x:hidden; }
+
+/* Full-Screen-Panels: jede Sektion füllt den Screen und snappt ein */
+section, footer{ scroll-snap-align:start; scroll-snap-stop:always; }
 
 /* ---- lebendiger Regenbogen-Verlauf (fix, scroll-gekoppelt) ---- */
 #bg{ position:fixed; inset:0; z-index:-2; --p:0;
@@ -76,11 +79,11 @@ sup{ font-size:.45em; vertical-align:super; }
 @keyframes bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
 
 /* ======================= ANGEBOTS-SEKTION ======================= */
-.offer{ padding:6vh 0 5vh; }
-.offer .wrap{ display:flex; flex-direction:column; gap:24px; }
+.offer{ min-height:100vh; display:flex; align-items:center; padding:4vh 0; }
+.offer .wrap{ display:flex; flex-direction:column; gap:18px; }
 
 /* Oberer „Krach"-Block: Headline + Auto + Badges */
-.offer-top{ position:relative; min-height:44vh; display:grid;
+.offer-top{ position:relative; min-height:auto; display:grid;
   grid-template-columns:1fr 1.05fr; align-items:center; gap:20px; }
 .kicker{ font-family:var(--display); font-size:clamp(17px,2.4vw,28px);
   text-transform:uppercase; letter-spacing:.01em; line-height:1.02; }
@@ -138,7 +141,8 @@ sup{ font-size:.45em; vertical-align:super; }
 .coming .kicker{ font-size:clamp(44px,10vw,110px); line-height:.82; opacity:.95; }
 
 /* ============================ CTA ============================ */
-#cta{ text-align:center; padding:14vh 0; }
+#cta{ min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center; padding:8vh 0; }
 #cta h2{ font-family:var(--display); font-size:clamp(30px,5.5vw,64px); line-height:.92; }
 .cta-btn{ display:inline-block; margin-top:24px; background:#fff; color:var(--magenta);
   font-weight:900; font-size:20px; padding:18px 44px; border-radius:999px;
@@ -170,11 +174,13 @@ footer strong{ color:#cfcdda; }
 #next-hint .a{ animation:bob 1.4s infinite; }
 
 @media (max-width:820px){
+  html{ scroll-snap-type:none; }          /* mobil kein hartes Snapping */
+  .offer{ min-height:auto; padding:8vh 0; }
   .offer-top{ grid-template-columns:1fr; min-height:auto; gap:24px; }
   .offer-bottom{ grid-template-columns:1fr; }
-  .car{ width:100%; margin:0; }
+  .car{ width:100%; margin:0; max-width:420px; }
   .wallbox{ position:static; transform:none; margin-top:10px; }
-  .foerder{ position:static; margin-top:14px; }
+  .foerder, .garantie{ position:static; margin-top:14px; }
   #timeline .label{ display:none; } #timeline{ right:10px; }
 }
 @media (prefers-reduced-motion:reduce){ *{animation:none!important;} }
@@ -384,13 +390,13 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 if(window.gsap && !reduce){
   gsap.registerPlugin(ScrollTrigger);
 
-  // HERO: WOW wächst dezent beim Scrollen + wird gepinnt (Intro-Frame)
-  gsap.set(".wow",{scale:.55});
-  gsap.timeline({scrollTrigger:{trigger:"#hero",start:"top top",end:"+=90%",pin:true,scrub:.4}})
-    .to(".wow",{scale:1,ease:"none"})
-    .from(".hero-car",{opacity:0,y:30},"<.25")
-    .from(".offerbar",{opacity:0,y:30},"<.15")
-    .from(".valid-badge",{opacity:0,scale:.85},"<.1");
+  // HERO: spielt beim Laden als Intro-Sequenz ab (kein Pin -> snap-kompatibel)
+  gsap.timeline({defaults:{ease:"power3.out"}})
+    .from(".brand",{opacity:0,y:-20,duration:.6})
+    .from(".wow",{scale:.5,opacity:0,duration:.9,ease:"back.out(1.5)"},"<")
+    .from(".hero-car",{opacity:0,y:40,duration:.8},"-=.4")
+    .from(".offerbar",{opacity:0,y:30,duration:.6},"-=.4")
+    .from(".valid-badge",{opacity:0,scale:.85,duration:.5},"-=.4");
 
   // Jede Angebots-Sektion: Elemente gleiten sauber & gestaffelt ins Endbild
   gsap.utils.toArray(".offer").forEach(sec=>{
