@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mitsubishi WOW! – Kampagne</title>
+<style>
+  /* ============================================================
+     DESIGN-TOKENS  (hier zentral anpassen: Farben, Größen, Tempo)
+     ============================================================ */
+  :root{
+    --ink:#11131a;
+    --white:#ffffff;
+    --radius:28px;
+    --max:1100px;
+    --ease-crash:cubic-bezier(.2,1.4,.3,1);   /* Overshoot fürs "Reinkrachen" */
+    --font: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:var(--font);
+    color:var(--white);
+    overflow-x:hidden;
+    line-height:1.4;
+  }
+
+  /* ---------- Regenbogen-Verlauf (fixe Hintergrund-Ebene) ---------- */
+  /* --p (0..1) wird per JS an die Scroll-Position gekoppelt.          */
+  #bg{
+    position:fixed; inset:0; z-index:-2;
+    --p:0;
+    --h1: calc(20 + var(--p) * 300);    /* Hue startet warm, wandert ins Blau */
+    --h2: calc(60 + var(--p) * 300);
+    background:
+      linear-gradient( calc(135deg + var(--p)*120deg),
+        hsl(var(--h1) 92% 60%),
+        hsl(var(--h2) 85% 52%) );
+    transition:background .15s linear;
+  }
+  #bg::after{ /* sanfter Glanz oben */
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(60% 50% at 50% 0%, rgba(255,255,255,.25), transparent 70%);
+    pointer-events:none;
+  }
+
+  /* ---------- Sektionen-Grundlayout ---------- */
+  section{
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:80px 24px;
+    position:relative;
+  }
+  .wrap{ width:100%; max-width:var(--max); }
+
+  /* ---------- HERO ---------- */
+  #hero{ min-height:130vh; justify-content:flex-start; padding-top:18vh; }
+  .hero-sticky{ position:sticky; top:18vh; text-align:center; }
+  .wow{
+    font-weight:900; letter-spacing:-.04em; line-height:.8;
+    font-size:clamp(80px, 30vw, 360px);
+    text-shadow:0 12px 40px rgba(0,0,0,.25);
+    transform:scale(var(--wow-scale, .25));
+    transition:transform .1s linear;
+  }
+  .wow span{ display:inline-block; -webkit-text-stroke:3px rgba(255,255,255,.9); }
+  .hero-sub{
+    margin-top:18px; font-size:clamp(18px,3.5vw,34px); font-weight:800;
+    text-transform:uppercase; letter-spacing:.02em;
+  }
+  .hero-price{
+    margin-top:6px; font-size:clamp(40px,12vw,120px); font-weight:900;
+    letter-spacing:-.03em;
+  }
+  .scroll-hint{
+    position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+    font-weight:700; opacity:.9; text-align:center;
+  }
+  .scroll-hint .arrow{ display:block; font-size:34px; animation:bob 1.4s infinite; }
+  @keyframes bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
+
+  /* ---------- Angebots-Karte (Crash-In) ---------- */
+  .card{
+    background:rgba(255,255,255,.96); color:var(--ink);
+    border-radius:var(--radius);
+    box-shadow:0 30px 80px rgba(0,0,0,.30);
+    padding:40px; width:100%;
+    display:grid; grid-template-columns:1.1fr .9fr; gap:30px; align-items:center;
+    transform:scale(.15) rotate(-4deg); opacity:0;
+    transition:transform .7s var(--ease-crash), opacity .5s ease;
+  }
+  .card.in{ transform:scale(1) rotate(0); opacity:1; }
+  .card .kicker{ font-weight:800; text-transform:uppercase; letter-spacing:.08em;
+    color:#d6006e; font-size:14px; }
+  .card h2{ font-size:clamp(30px,5vw,56px); font-weight:900; letter-spacing:-.02em; margin:2px 0 4px; }
+  .card .tagline{ color:#555; font-weight:600; margin-bottom:14px; }
+  .price-big{ font-size:clamp(46px,9vw,90px); font-weight:900; letter-spacing:-.03em; line-height:1; }
+  .price-big .cur{ font-size:.5em; vertical-align:.15em; }
+  .price-note{ color:#666; font-weight:600; margin-top:4px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .badge{ background:#111; color:#fff; border-radius:999px; padding:6px 14px;
+    font-size:13px; font-weight:700; }
+  .badge.pink{ background:#d6006e; }
+  .highlights{ list-style:none; margin-top:14px; font-size:14px; color:#333; }
+  .highlights li{ padding:4px 0 4px 22px; position:relative; }
+  .highlights li::before{ content:"▸"; position:absolute; left:0; color:#d6006e; }
+
+  /* Auto-Platzhalter (echte Freisteller später ersetzen) */
+  .car{
+    aspect-ratio:16/10; border-radius:18px;
+    background:linear-gradient(135deg,#eef0f4,#d9dde6);
+    display:flex; align-items:center; justify-content:center;
+    color:#9aa0ad; font-weight:800; text-align:center; padding:16px;
+  }
+  .car svg{ width:80%; height:auto; opacity:.55; }
+
+  .coming .card{ background:rgba(10,12,20,.55); color:#fff; text-align:center;
+    display:block; backdrop-filter:blur(4px); border:2px dashed rgba(255,255,255,.5); }
+  .coming h2{ font-size:clamp(48px,14vw,140px); }
+
+  /* ---------- CTA ---------- */
+  .cta-btn{
+    display:inline-block; margin-top:20px; background:#fff; color:#d6006e;
+    font-weight:900; font-size:20px; padding:18px 40px; border-radius:999px;
+    text-decoration:none; box-shadow:0 16px 40px rgba(0,0,0,.3);
+    transition:transform .2s var(--ease-crash);
+  }
+  .cta-btn:hover{ transform:scale(1.06); }
+
+  /* ---------- Footer ---------- */
+  footer{ background:#0c0e15; color:#8a90a0; font-size:12px; padding:50px 24px; }
+  footer .wrap{ max-width:var(--max); }
+  footer strong{ color:#cfd3dd; }
+
+  /* ============================================================
+     ZEITSTRAHL  (Scroll-Navigator rechts)
+     ============================================================ */
+  #timeline{
+    position:fixed; top:50%; right:22px; transform:translateY(-50%);
+    z-index:50; display:flex; flex-direction:column; align-items:center; gap:0;
+  }
+  #timeline .track{ position:relative; width:4px; border-radius:4px;
+    background:rgba(255,255,255,.35); flex:1; }
+  #timeline .fill{ position:absolute; top:0; left:0; width:100%;
+    height:var(--fill,0%); background:#fff; border-radius:4px; transition:height .1s linear; }
+  #timeline ol{ list-style:none; display:flex; flex-direction:column; gap:26px; }
+  #timeline li{ display:flex; align-items:center; gap:10px; cursor:pointer;
+    justify-content:flex-end; }
+  #timeline .dot{ width:13px; height:13px; border-radius:50%;
+    background:rgba(255,255,255,.55); border:2px solid rgba(255,255,255,.9);
+    transition:transform .25s, background .25s; }
+  #timeline li.active .dot{ transform:scale(1.6); background:#fff;
+    box-shadow:0 0 0 6px rgba(255,255,255,.25); }
+  #timeline .label{ font-size:12px; font-weight:700; color:#fff; opacity:0;
+    transform:translateX(8px); transition:opacity .25s, transform .25s;
+    white-space:nowrap; text-shadow:0 1px 6px rgba(0,0,0,.4); }
+  #timeline li:hover .label, #timeline li.active .label{ opacity:1; transform:translateX(0); }
+  /* "Was kommt als Nächstes" Pfeil */
+  #next-hint{ position:fixed; bottom:18px; right:18px; z-index:50;
+    background:rgba(0,0,0,.4); color:#fff; padding:8px 14px; border-radius:999px;
+    font-size:13px; font-weight:700; backdrop-filter:blur(4px);
+    display:flex; align-items:center; gap:6px; }
+  #next-hint .arrow{ animation:bob 1.4s infinite; }
+
+  @media (max-width:760px){
+    #timeline .label{ display:none; }
+    #timeline{ right:10px; }
+    .card{ grid-template-columns:1fr; }
+    .car{ order:-1; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{ animation:none !important; transition:none !important; }
+    .card{ transform:none; opacity:1; }
+    .wow{ transform:scale(1) !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+
+<!-- ===== HERO ===== -->
+<section id="hero" data-label="Start">
+  <div class="hero-sticky">
+    <div class="wow"><span>W</span><span>O</span><span>W</span><span>!</span></div>
+    <div class="hero-sub">Ohne Anzahlung · Outlander Diamant mtl. leasen</div>
+    <div class="hero-price">189&nbsp;€</div>
+  </div>
+  <div class="scroll-hint">
+    Scroll für die WOW-Angebote
+    <span class="arrow">↓</span>
+  </div>
+</section>
+
+<!-- Angebots-Sektionen werden per JS aus OFFERS erzeugt -->
+<main id="offers"></main>
+
+<!-- ===== CTA ===== -->
+<section id="cta" data-label="Kontakt">
+  <div class="wrap" style="text-align:center;">
+    <h2 style="font-size:clamp(36px,8vw,80px); font-weight:900; letter-spacing:-.02em;">
+      Es gibt Angebote, da kann man einfach nur „WOW" sagen!
+    </h2>
+    <p style="font-size:20px; font-weight:600; margin-top:14px;">
+      Kommen Sie vorbei – wir freuen uns auf Sie. WOW-Angebote gültig bis 31.12.2026.
+    </p>
+    <a class="cta-btn" href="#">Händler in Ihrer Nähe finden</a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer data-label="Rechtliches">
+  <div class="wrap">
+    <p><strong>Veröffentlichung der MMD Automobile GmbH</strong>, Emil-Frey-Straße 2, 61169 Friedberg.</p>
+    <p style="margin-top:10px;">
+      X | Freibleibendes Leasingangebot der <strong>MKG Bank, Zweigniederlassung der MCE Bank GmbH</strong>,
+      Schieferstein 9, 65439 Flörsheim, zzgl. Überführungskosten. Nur bei teilnehmenden Händlern.
+      Energie- und CO₂-Werte siehe jeweilige Modellangaben. Abbildungen zeigen Sonderausstattung.
+      <em>(Prototyp – Platzhalterpreise, finale Werte folgen.)</em>
+    </p>
+  </div>
+</footer>
+
+<!-- ===== ZEITSTRAHL ===== -->
+<nav id="timeline" aria-label="Seiten-Navigation">
+  <div class="track"><div class="fill"></div></div>
+  <ol></ol>
+</nav>
+<div id="next-hint"><span>↓ Weiter:</span> <span id="next-label">…</span></div>
+
+<script>
+/* ============================================================
+   INHALTSDATEN  –  hier einfach Modelle pflegen/ergänzen/ändern
+   ============================================================ */
+const OFFERS = [
+  {
+    id:"outlander-diamant", label:"Outlander", kicker:"WOW-Angebot Outlander Diamant",
+    name:"Outlander", tagline:"Der souveräne Plug-in Hybrid-SUV",
+    price:189, cur:"€", note:"mtl. · ohne Anzahlung",
+    badges:[{t:"Gratis Wallbox 599 €",p:true},{t:"bis 4.500 € Förderung"},{t:"8 Jahre Garantie"}],
+    highlights:["12,3\" Infotainment mit Google-Navigation","360°-Kameras, Super All Wheel Control",
+      "Dynamic Sound Yamaha Premium","ab 35.490 € rechnerischer Aufwand"]
+  },
+  {
+    id:"asx", label:"ASX", kicker:"WOW-Angebot ASX Diamant",
+    name:"ASX", tagline:"Der kompakte SUV",
+    price:25390, cur:"€", note:"unverb. Preisempf. – Aktionspreis folgt",
+    badges:[{t:"Aktionsrabatt",p:true}],
+    highlights:["10,4\" Infotainment mit Wireless-Smartphone","17\" Flexfelgen, LED-Scheinwerfer",
+      "My Safety Taste, Rückfahrkamera","verschiebbare Rücksitzbank"]
+  },
+  {
+    id:"grandis", label:"Grandis", kicker:"WOW-Angebot Grandis Diamant",
+    name:"Grandis", tagline:"Der vielseitige Hybrid-SUV",
+    price:29390, cur:"€", note:"unverb. Preisempf. – Aktionspreis folgt",
+    badges:[{t:"Aktionsrabatt",p:true}],
+    highlights:["17\" Flexfelgen, elektr. Parkbremse + Auto-Hold","10,4\" Touchscreen, LED vorn/hinten",
+      "Smart-Key-System, Sitzheizung","verschiebbare Rücksitzbank"]
+  },
+  {
+    id:"outlander-black", label:"Outlander Black", kicker:"WOW-Angebot Outlander Black",
+    name:"Outlander Black", tagline:"Das Sondermodell mit Charakter",
+    price:63690, cur:"€", note:"unverb. Preisempf. – ab 49.190 € rechn. Aufwand",
+    badges:[{t:"Gratis Wallbox 599 €",p:true},{t:"bis 4.500 € Förderung"}],
+    highlights:["Allradantrieb Super All Wheel Control","Massage-, Klima- & Memory-Sitze vorn",
+      "Head-up Display, MI-Pilot","Panorama-Glasschiebedach, Premium-Leder"]
+  },
+  {
+    id:"eclipse-cross", label:"Eclipse Cross", kicker:"WOW-Angebot Eclipse Cross Diamant",
+    name:"Eclipse Cross", tagline:"Der dynamische Elektro-SUV",
+    price:0, cur:"€", note:"Aktionspreis folgt – Highlights Diamant PLUS",
+    badges:[{t:"Gratis Wallbox 599 €",p:true},{t:"bis 6.000 € Förderung"}],
+    highlights:["87 kWh Batterie, 160 kW (218 PS)","19\" Leichtmetallfelgen, DC-Laden (CCS)",
+      "Google built-in mit EV-Services","Wärmepumpe mit Vorklimatisierung"]
+  },
+  {
+    id:"l200", label:"L200", kicker:"L200", comingSoon:true,
+    name:"L200", tagline:"Der kraftvolle Pick-up"
+  }
+];
+
+/* ============================================================
+   RENDERING der Angebots-Karten
+   ============================================================ */
+const carSVG = `<svg viewBox="0 0 200 90" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10 65 Q15 45 45 42 L70 30 Q85 22 120 24 L150 28 Q180 32 188 55 L190 65 Z" fill="currentColor"/>
+  <circle cx="55" cy="68" r="13" fill="#444"/><circle cx="150" cy="68" r="13" fill="#444"/>
+</svg>`;
+
+function fmt(n){ return n.toLocaleString("de-DE"); }
+
+const offersRoot = document.getElementById("offers");
+OFFERS.forEach(o=>{
+  const sec = document.createElement("section");
+  sec.dataset.label = o.label;
+  sec.id = o.id;
+
+  if(o.comingSoon){
+    sec.className = "coming";
+    sec.innerHTML = `<div class="wrap"><div class="card">
+      <div class="kicker" style="color:#fff">${o.kicker}</div>
+      <h2>COMING<br>SOON</h2>
+      <p class="tagline" style="color:#ddd">${o.tagline}</p>
+      <div class="car" style="margin-top:20px">${carSVG}</div>
+    </div></div>`;
+  } else {
+    const badges = (o.badges||[]).map(b=>`<span class="badge ${b.p?'pink':''}">${b.t}</span>`).join("");
+    const hl = (o.highlights||[]).map(h=>`<li>${h}</li>`).join("");
+    const priceTxt = o.price>0
+      ? `<div class="price-big" data-count="${o.price}">0<span class="cur">${o.cur}</span></div>`
+      : `<div class="price-big">XX.XXX<span class="cur">${o.cur}</span></div>`;
+    sec.innerHTML = `<div class="wrap"><div class="card">
+      <div>
+        <div class="kicker">${o.kicker}</div>
+        <h2>${o.name}</h2>
+        <div class="tagline">${o.tagline}</div>
+        ${priceTxt}
+        <div class="price-note">${o.note||""}</div>
+        <div class="badges">${badges}</div>
+      </div>
+      <div>
+        <div class="car">${carSVG}</div>
+        <ul class="highlights">${hl}</ul>
+      </div>
+    </div></div>`;
+  }
+  offersRoot.appendChild(sec);
+});
+
+/* ============================================================
+   1) Regenbogen-Verlauf + Hero-Scale an Scroll koppeln
+   ============================================================ */
+const bg = document.getElementById("bg");
+const wow = document.querySelector(".wow");
+const fill = document.querySelector("#timeline .fill");
+
+function onScroll(){
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const p = max>0 ? window.scrollY / max : 0;
+  bg.style.setProperty("--p", p.toFixed(4));
+  fill.style.setProperty("--fill", (p*100).toFixed(1) + "%");
+
+  // Hero "WOW" wächst von klein auf groß im ersten Viewport
+  const heroProg = Math.min(window.scrollY / (window.innerHeight*0.6), 1);
+  wow.style.setProperty("--wow-scale", (0.25 + heroProg*0.75).toFixed(3));
+}
+window.addEventListener("scroll", onScroll, {passive:true});
+onScroll();
+
+/* ============================================================
+   2) Crash-In + Preis-Zähler beim Eintritt in den Viewport
+   ============================================================ */
+const cardObs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const card = e.target;
+    card.classList.add("in");
+    const counter = card.querySelector("[data-count]");
+    if(counter && !counter.dataset.done){
+      counter.dataset.done = "1";
+      countUp(counter, +counter.dataset.count);
+    }
+    cardObs.unobserve(card);
+  });
+},{ threshold:0.35 });
+document.querySelectorAll(".card").forEach(c=>cardObs.observe(c));
+
+function countUp(el, target){
+  const cur = el.querySelector(".cur").outerHTML;
+  const dur = 900, t0 = performance.now();
+  function tick(now){
+    const k = Math.min((now-t0)/dur, 1);
+    const val = Math.round(target * (1-Math.pow(1-k,3)));  // easeOutCubic
+    el.innerHTML = fmt(val) + cur;
+    if(k<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ============================================================
+   3) ZEITSTRAHL automatisch aus allen Sektionen aufbauen
+   ============================================================ */
+const sections = [...document.querySelectorAll("section[data-label], footer[data-label]")];
+const ol = document.querySelector("#timeline ol");
+const nextLabel = document.getElementById("next-label");
+
+sections.forEach((s,i)=>{
+  const li = document.createElement("li");
+  li.innerHTML = `<span class="label">${s.dataset.label}</span><span class="dot"></span>`;
+  li.addEventListener("click", ()=> s.scrollIntoView({behavior:"smooth"}));
+  ol.appendChild(li);
+  s._navItem = li; s._index = i;
+});
+
+const navObs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    sections.forEach(s=> s._navItem.classList.remove("active"));
+    const cur = e.target;
+    cur._navItem.classList.add("active");
+    const next = sections[cur._index+1];
+    nextLabel.textContent = next ? next.dataset.label : "Nach oben ↑";
+  });
+},{ threshold:0.5 });
+sections.forEach(s=>navObs.observe(s));
+</script>
+</body>
+</html>
