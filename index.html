@@ -50,11 +50,11 @@ sup{ font-size:.45em; vertical-align:super; }
 #hero{ height:100vh; display:flex; flex-direction:column; align-items:center;
   justify-content:center; text-align:center; overflow:hidden; }
 .wow{ font-family:var(--display); line-height:.78; letter-spacing:.01em;
-  font-size:clamp(120px, 40vw, 520px); color:#fff;
-  text-shadow:0 18px 60px rgba(0,0,0,.3); will-change:transform; }
+  font-size:clamp(72px, 18vw, 230px); color:#fff;
+  text-shadow:0 14px 44px rgba(0,0,0,.3); will-change:transform; }
 .hero-sub{ font-weight:900; text-transform:uppercase; letter-spacing:.04em;
-  font-size:clamp(16px,2.4vw,30px); margin-top:6px; }
-.hero-price{ font-family:var(--display); font-size:clamp(56px,14vw,150px);
+  font-size:clamp(13px,1.8vw,20px); margin-top:8px; }
+.hero-price{ font-family:var(--display); font-size:clamp(38px,8vw,96px);
   line-height:.9; margin-top:4px; }
 .hero-price .eur{ font-size:.6em; }
 .scroll-hint{ position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
@@ -63,43 +63,43 @@ sup{ font-size:.45em; vertical-align:super; }
 @keyframes bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
 
 /* ======================= ANGEBOTS-SEKTION ======================= */
-.offer{ padding:9vh 0 7vh; }
-.offer .wrap{ display:flex; flex-direction:column; gap:30px; }
+.offer{ padding:6vh 0 5vh; }
+.offer .wrap{ display:flex; flex-direction:column; gap:24px; }
 
 /* Oberer „Krach"-Block: Headline + Auto + Badges */
-.offer-top{ position:relative; min-height:58vh; display:grid;
-  grid-template-columns:1fr 1fr; align-items:center; }
-.kicker{ font-family:var(--display); font-size:clamp(22px,3.4vw,42px);
-  text-transform:uppercase; letter-spacing:.01em; line-height:1; }
+.offer-top{ position:relative; min-height:44vh; display:grid;
+  grid-template-columns:1fr 1.05fr; align-items:center; gap:20px; }
+.kicker{ font-family:var(--display); font-size:clamp(17px,2.4vw,28px);
+  text-transform:uppercase; letter-spacing:.01em; line-height:1.02; }
 .lease{ font-weight:900; text-transform:uppercase; letter-spacing:.06em;
-  font-size:14px; margin:10px 0 4px; opacity:.95; }
-.jetzt{ font-family:var(--display); font-size:clamp(40px,7vw,86px); line-height:.85; }
-.bigprice{ font-family:var(--display); font-size:clamp(80px,18vw,210px);
+  font-size:12px; margin:8px 0 2px; opacity:.95; }
+.jetzt{ font-family:var(--display); font-size:clamp(26px,4vw,52px); line-height:.85; }
+.bigprice{ font-family:var(--display); font-size:clamp(52px,10vw,130px);
   line-height:.8; display:flex; align-items:flex-start; gap:.05em; }
 .bigprice .eur{ font-size:.5em; margin-top:.12em; }
-.anzahlung{ font-family:var(--display); font-size:clamp(20px,3vw,34px);
+.anzahlung{ font-family:var(--display); font-size:clamp(15px,2.2vw,24px);
   text-transform:uppercase; margin-top:2px; }
 
-.car{ position:relative; width:115%; max-width:none; margin-left:-6%;
-  filter:drop-shadow(0 30px 40px rgba(0,0,0,.35)); will-change:transform; }
+.car{ position:relative; width:100%; max-width:520px; margin:0 auto; display:block;
+  filter:drop-shadow(0 24px 34px rgba(0,0,0,.32)); will-change:transform; }
 
 /* Runde Wallbox-Badge (oben rechts) */
-.wallbox{ position:absolute; top:0; right:0; width:clamp(120px,15vw,180px);
+.wallbox{ position:absolute; top:0; right:0; width:clamp(86px,10vw,120px);
   aspect-ratio:1; border-radius:50%; background:rgba(0,0,0,.78);
   display:flex; align-items:center; justify-content:center; text-align:center;
-  padding:14px; font-weight:900; font-size:clamp(11px,1.1vw,14px);
+  padding:12px; font-weight:900; font-size:clamp(9px,.9vw,11px);
   line-height:1.2; transform:rotate(-8deg); }
 /* Förder-Tag */
 .foerder{ position:absolute; left:0; bottom:0; background:#0d0b14;
-  border-radius:18px; padding:14px 20px; max-width:300px; }
-.foerder b{ font-family:var(--display); font-size:clamp(22px,3vw,34px); display:block; }
-.foerder span{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+  border-radius:14px; padding:10px 16px; max-width:240px; }
+.foerder b{ font-family:var(--display); font-size:clamp(16px,2.2vw,24px); display:block; }
+.foerder span{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
 
 /* Unterer Info-Block (weiß) wie Flyer-Unterkante */
-.offer-bottom{ display:grid; grid-template-columns:1.3fr 1fr; gap:24px;
-  background:rgba(255,255,255,.97); color:var(--ink); border-radius:26px;
-  padding:34px; box-shadow:0 30px 70px rgba(0,0,0,.28); }
-.model-name{ font-family:var(--display); font-size:clamp(30px,4.5vw,50px); line-height:.95; }
+.offer-bottom{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px;
+  background:rgba(255,255,255,.97); color:var(--ink); border-radius:20px;
+  padding:24px; box-shadow:0 24px 56px rgba(0,0,0,.26); }
+.model-name{ font-family:var(--display); font-size:clamp(22px,3.2vw,36px); line-height:.95; }
 .model-tag{ font-weight:900; color:var(--magenta); margin:2px 0 14px; }
 .highlights{ list-style:none; font-size:14px; color:#333; }
 .highlights li{ position:relative; padding:5px 0 5px 22px; }
@@ -114,11 +114,11 @@ sup{ font-size:.45em; vertical-align:super; }
 
 /* Coming soon */
 .coming .offer-top{ justify-items:start; }
-.coming .kicker{ font-size:clamp(60px,16vw,170px); line-height:.82; opacity:.95; }
+.coming .kicker{ font-size:clamp(44px,10vw,110px); line-height:.82; opacity:.95; }
 
 /* ============================ CTA ============================ */
-#cta{ text-align:center; padding:18vh 0; }
-#cta h2{ font-family:var(--display); font-size:clamp(40px,8vw,96px); line-height:.92; }
+#cta{ text-align:center; padding:14vh 0; }
+#cta h2{ font-family:var(--display); font-size:clamp(30px,5.5vw,64px); line-height:.92; }
 .cta-btn{ display:inline-block; margin-top:24px; background:#fff; color:var(--magenta);
   font-weight:900; font-size:20px; padding:18px 44px; border-radius:999px;
   text-decoration:none; box-shadow:0 18px 44px rgba(0,0,0,.35);
@@ -356,26 +356,26 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 if(window.gsap && !reduce){
   gsap.registerPlugin(ScrollTrigger);
 
-  // HERO: WOW wächst beim Scrollen + wird gepinnt (wie ein Intro-Frame)
-  gsap.set(".wow",{scale:.25});
-  gsap.timeline({scrollTrigger:{trigger:"#hero",start:"top top",end:"+=110%",pin:true,scrub:.4}})
+  // HERO: WOW wächst dezent beim Scrollen + wird gepinnt (Intro-Frame)
+  gsap.set(".wow",{scale:.55});
+  gsap.timeline({scrollTrigger:{trigger:"#hero",start:"top top",end:"+=90%",pin:true,scrub:.4}})
     .to(".wow",{scale:1,ease:"none"})
-    .from(".hero-sub",{opacity:0,y:40},"<.3")
-    .from(".hero-price",{opacity:0,y:60,ease:"back.out(1.7)"},"<.1");
+    .from(".hero-sub",{opacity:0,y:24},"<.35")
+    .from(".hero-price",{opacity:0,y:30},"<.1");
 
-  // Jede Angebots-Sektion: Elemente fliegen gestaffelt rein
+  // Jede Angebots-Sektion: Elemente gleiten sauber & gestaffelt ins Endbild
   gsap.utils.toArray(".offer").forEach(sec=>{
     const items = sec.querySelectorAll(".reveal");
-    gsap.from(items,{ y:70, opacity:0, duration:.7, stagger:.12, ease:"back.out(1.5)",
-      scrollTrigger:{ trigger:sec, start:"top 72%" }});
+    gsap.from(items,{ y:30, opacity:0, duration:.55, stagger:.07, ease:"power3.out",
+      scrollTrigger:{ trigger:sec, start:"top 75%" }});
 
     const car = sec.querySelector(".reveal-car");
     if(car){
-      // Auto kracht von der Seite rein …
-      gsap.from(car,{ xPercent:60, scale:.7, opacity:0, duration:1, ease:"power3.out",
+      // Auto gleitet von der Seite an seine Endposition (kein Überschwingen)
+      gsap.from(car,{ xPercent:22, opacity:0, duration:.8, ease:"power3.out",
         scrollTrigger:{ trigger:sec, start:"top 78%" }});
-      // … und bewegt sich beim Weiterscrollen (Parallax)
-      gsap.to(car,{ yPercent:-14, ease:"none",
+      // dezenter Parallax beim Weiterscrollen
+      gsap.to(car,{ yPercent:-6, ease:"none",
         scrollTrigger:{ trigger:sec, start:"top bottom", end:"bottom top", scrub:true }});
     }
     // Preis hochzählen
