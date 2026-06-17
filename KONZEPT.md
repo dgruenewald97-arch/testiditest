@@ -15,7 +15,7 @@ Display-Typo, das „WOW!". Diese Energie übersetzen wir in **Bewegung**.
 Der Nutzer scrollt nicht durch eine Seite — er fährt durch eine Farbreise,
 bei der jedes Modell einen eigenen „Moment" bekommt.
 
-Drei Prinzipien:
+Vier Prinzipien:
 
 1. **Living Gradient** — ein durchgehender Verlauf im Hintergrund, dessen
    Farbe an die Scroll-Position gekoppelt ist (Regenbogen-Switch).
@@ -23,6 +23,8 @@ Drei Prinzipien:
    (klein → groß mit Overshoot, leichter Rotation, „Impact"-Moment).
 3. **Type that jumps** — Headlines starten winzig, beim Scroll-Trigger
    skalieren sie explosionsartig auf Vollbild („WOW!", „Jetzt ab 189 €").
+4. **Geführter Scroll** — ein Zeitstrahl als ständiger Begleiter zeigt, wo
+   man ist und was als Nächstes kommt. Orientierung trotz Erlebnis.
 
 ---
 
@@ -58,6 +60,36 @@ Sektion im Backend setzbar).
 **Performance & A11y:** Animation nur auf `transform`/`opacity`/CSS-Vars
 (GPU-freundlich). `prefers-reduced-motion` respektieren → dann statischer
 Verlauf, Karten faden sanft statt zu krachen.
+
+---
+
+## 2b. Zeitstrahl — Scroll-Orientierung (Down-Navigator)
+
+Damit der Nutzer im langen Scroll-Erlebnis nie die Orientierung verliert,
+gibt es einen **vertikalen Zeitstrahl** im Look der Kampagne — fix am
+Bildschirmrand (Desktop rechts, Mobile als schlanke Leiste).
+
+**Was er kann:**
+
+- **Fortschritt:** Eine Linie füllt sich von oben nach unten passend zur
+  Scroll-Position; der „Füllstand" greift die aktuelle Gradient-Farbe auf,
+  läuft also im Regenbogen mit.
+- **Stationen:** Ein Punkt pro Sektion (Hero, ASX, Grandis, Outlander …).
+  Der aktive Punkt pulsiert/vergrößert sich.
+- **„Was kommt als Nächstes":** Eine kleine **Pfeil-nach-unten**-Marke am
+  unteren Ende mit Mini-Label der nächsten Sektion (z. B. „↓ Outlander
+  189 €"). Im Hero zusätzlich ein animierter Bounce-Pfeil als
+  Scroll-Einladung.
+- **Sprung-Navigation:** Klick/Tap auf einen Punkt scrollt sanft zur Sektion
+  (smooth scroll). So wird der Zeitstrahl auch zur Schnellnavigation.
+
+**Technik:** Der Zeitstrahl baut sich **automatisch** aus den vorhandenen
+Sektionen auf — er liest beim Laden alle Elemente mit `data-section` und
+deren `data-label` aus und erzeugt die Punkte daraus. Dadurch muss in TYPO3
+niemand den Zeitstrahl separat pflegen: Wer im Backend eine Angebots-Karte
+hinzufügt/entfernt, ändert automatisch auch den Zeitstrahl. Aktiver Zustand
+via IntersectionObserver. `prefers-reduced-motion` → statischer Pfeil ohne
+Bounce.
 
 ---
 
@@ -139,13 +171,51 @@ Fluid-Templates, TCA-Definitionen und gebündelten Frontend-Assets.
 
 ---
 
+## 6b. KI-anpassbare Architektur (damit man sich nicht verrennt)
+
+Leitsatz: **Inhalt, Daten und Effekt sind getrennt.** Eine KI (oder ein
+Mensch) soll Modelle, Preise, Farben und Reihenfolge ändern können, ohne
+die Animations-Logik anzufassen — und umgekehrt. Dadurch bleiben Änderungen
+lokal und vorhersehbar, statt dass eine kleine Anpassung alles kippt.
+
+Konkrete Prinzipien:
+
+1. **Eine zentrale Daten-Quelle.** Alle Angebote leben in *einer* Struktur
+   (im Prototyp eine `content.json` / JS-Datenobjekt; in TYPO3 die
+   Content-Element-Felder). Neues Modell = ein neuer Eintrag, kein neuer Code.
+2. **Deklarativ statt imperativ.** Verhalten wird über `data-`Attribute
+   gesteuert (`data-section`, `data-label`, `data-gradient-from/-to`,
+   `data-crash`, `data-count-to`). Die KI ändert Attribute/Daten — nicht
+   die JS-Engine. Die Engine ist „dumm" und generisch.
+3. **Ein Bauteil, viele Instanzen.** Es gibt *eine* Angebots-Karte als
+   Template. Alle Modelle nutzen sie. Kein Copy-Paste pro Modell → keine
+   Drift, keine Stelle wird vergessen.
+4. **Design-Tokens an einem Ort.** Farben, Verlaufs-Stops, Abstände, Typo-
+   Größen als CSS-Custom-Properties in *einer* `:root`-Datei. „Mach das
+   Pink dunkler" = ein Wert, global wirksam.
+5. **Klare Grenzen + Doku.** Jede Datei hat einen Kommentar-Header „Was hier
+   geändert werden darf / was nicht". Plus ein `AGENTS.md`/`CLAUDE.md` mit
+   Karte des Projekts, damit eine KI sofort weiß, wo was liegt.
+6. **Kleine, lesbare Dateien.** Lieber mehrere klar benannte Module
+   (`gradient.js`, `crash-cards.js`, `timeline.js`) als eine 1000-Zeilen-Datei.
+   So bleibt jeder Eingriff überschaubar und reviewbar.
+7. **Defensive Defaults.** Fehlt ein Feld (z. B. kein Förder-Betrag), rendert
+   das Bauteil sauber ohne Fehler. Eine KI kann nichts „kaputt" machen, indem
+   sie etwas weglässt.
+
+---
+
 ## 7. Offene Punkte / Klärungsbedarf
 
 - [ ] Finale Preise/Rabatte für ASX, Grandis, Eclipse Cross (in Beilage „XX €")
 - [ ] Echte Fahrzeug-Freisteller (PNG mit Transparenz) in hoher Auflösung
 - [ ] Mitsubishi Brand-Font / Lizenz für Display-Typo
 - [ ] Händlersuche: eigenes Embed oder Verlinkung auf mitsubishi-motors.de?
-- [ ] TYPO3-Version & bestehendes Sitepackage (für Integrationsweg)
+- [ ] **TYPO3-Version** — extern nicht ermittelbar (Seite blockt Bots mit
+      403, TYPO3 versteckt Version bewusst). Bitte vom TYPO3-Team aus dem
+      Backend bestätigen (Maintenance → System-Information). Annahme bis
+      dahin: aktuelle LTS (13.4 / 14.x), Module werden versions-agnostisch
+      gebaut. Außerdem: bestehendes Sitepackage vorhanden?
 - [ ] Rechtstexte final (Leasing-Fußnoten, Förder-Bedingungen)
 
 ---
