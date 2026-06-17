@@ -32,6 +32,27 @@ body{ font-family:var(--text); color:#fff; background:#0c0a12; overflow-x:hidden
 /* Full-Screen-Panels: jede Sektion füllt den Screen und snappt ein */
 section, footer{ scroll-snap-align:start; scroll-snap-stop:always; }
 
+/* Reveal-Animationen: nur aktiv wenn JS läuft -> ohne JS bleibt alles sichtbar */
+.js .reveal{ opacity:0; transform:translateY(28px);
+  transition:opacity .6s ease, transform .7s cubic-bezier(.2,.85,.25,1); }
+.js .reveal-car{ opacity:0; transform:translateX(46px) scale(.96);
+  transition:opacity .7s ease, transform .9s cubic-bezier(.2,.85,.25,1); }
+.reveal.in, .reveal-car.in{ opacity:1; transform:none; }
+
+/* Hero-Intro beim Laden (reine CSS-Animation) */
+@keyframes fadeUp{ from{opacity:0; transform:translateY(24px);} to{opacity:1; transform:none;} }
+@keyframes wowpop{ from{opacity:0; transform:rotate(-4deg) skewX(-4deg) scale(.55);}
+  to{opacity:1; transform:rotate(-4deg) skewX(-4deg) scale(1);} }
+.brand{ animation:fadeUp .7s ease both .1s; }
+.hero-car{ animation:fadeUp .8s ease both .5s; }
+.offerbar{ animation:fadeUp .7s ease both .7s; }
+.valid-badge{ animation:fadeUp .6s ease both .9s; }
+
+@media (prefers-reduced-motion:reduce){
+  .js .reveal, .js .reveal-car{ opacity:1 !important; transform:none !important; transition:none; }
+  .brand,.hero-car,.offerbar,.valid-badge,.wow{ animation:none; }
+}
+
 /* ---- lebendiger Regenbogen-Verlauf (fix, scroll-gekoppelt) ---- */
 #bg{ position:fixed; inset:0; z-index:-2; --p:0;
   --h1:calc(330 + var(--p)*-130);   /* Magenta -> Violett -> Blau */
@@ -67,6 +88,7 @@ sup{ font-size:.45em; vertical-align:super; }
     7px 9px 0 var(--pink),
     13px 17px 0 var(--magenta),
     20px 26px 26px rgba(120,0,80,.38);
+  animation:wowpop .9s cubic-bezier(.2,1.5,.3,1) both;
   will-change:transform; }
 .hero-car{ width:min(520px,78vw); margin-top:8px;
   filter:drop-shadow(0 22px 30px rgba(0,0,0,.3)); }
@@ -237,10 +259,9 @@ footer strong{ color:#cfcdda; }
 </nav>
 <div id="next-hint"><span class="a">↓</span><span id="next-label">…</span></div>
 
-<!-- GSAP (online). Ohne Netz bleiben Inhalte sichtbar, nur ohne Animation. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Animationen laufen in reinem JS – keine externe Bibliothek, läuft überall. -->
 <script>
+document.documentElement.classList.add("js");
 /* ============================================================
    INHALTSDATEN  – Modelle, Preise, Bilder hier pflegen.
    img: Pfad zum freigestellten Auto. Morgen einfach die Datei
@@ -391,48 +412,30 @@ const navObs=new IntersectionObserver(es=>es.forEach(e=>{
 secs.forEach(s=>navObs.observe(s));
 
 /* ============================================================
-   VIDEO-FEELING: alles scrollt animiert rein (GSAP ScrollTrigger)
+   Reveal beim Eintritt + Preis-Zähler (reines JS, keine Abhängigkeit)
    ============================================================ */
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-if(window.gsap && !reduce){
-  gsap.registerPlugin(ScrollTrigger);
-
-  // HERO: spielt beim Laden als Intro-Sequenz ab (kein Pin -> snap-kompatibel)
-  gsap.timeline({defaults:{ease:"power3.out"}})
-    .from(".brand",{opacity:0,y:-20,duration:.6})
-    .from(".wow",{scale:.5,opacity:0,duration:.9,ease:"back.out(1.5)"},"<")
-    .from(".hero-car",{opacity:0,y:40,duration:.8},"-=.4")
-    .from(".offerbar",{opacity:0,y:30,duration:.6},"-=.4")
-    .from(".valid-badge",{opacity:0,scale:.85,duration:.5},"-=.4");
-
-  // Jede Angebots-Sektion: Elemente gleiten sauber & gestaffelt ins Endbild
-  gsap.utils.toArray(".offer").forEach(sec=>{
-    const items = sec.querySelectorAll(".reveal");
-    gsap.from(items,{ y:30, opacity:0, duration:.55, stagger:.07, ease:"power3.out",
-      scrollTrigger:{ trigger:sec, start:"top 75%" }});
-
-    const car = sec.querySelector(".reveal-car");
-    if(car){
-      // Auto gleitet von der Seite an seine Endposition (kein Überschwingen)
-      gsap.from(car,{ xPercent:22, opacity:0, duration:.8, ease:"power3.out",
-        scrollTrigger:{ trigger:sec, start:"top 78%" }});
-      // dezenter Parallax beim Weiterscrollen
-      gsap.to(car,{ yPercent:-6, ease:"none",
-        scrollTrigger:{ trigger:sec, start:"top bottom", end:"bottom top", scrub:true }});
-    }
-    // Preis hochzählen
-    const num = sec.querySelector(".num[data-count]");
-    if(num){
-      const target=+num.dataset.count;
-      ScrollTrigger.create({ trigger:sec, start:"top 70%", once:true,
-        onEnter:()=>gsap.to({v:0},{v:target,duration:1,ease:"power2.out",
-          onUpdate:function(){ num.textContent=Math.round(this.targets()[0].v).toLocaleString("de-DE"); }})});
-    }
-  });
-
-  // CTA Headline
-  gsap.from("#cta h2",{ opacity:0, scale:.8, duration:.8, ease:"back.out(1.6)",
-    scrollTrigger:{ trigger:"#cta", start:"top 75%" }});
+function countUp(el){
+  const target=+el.dataset.count, dur=1000, t0=performance.now();
+  (function tick(now){
+    const k=Math.min((now-t0)/dur,1);
+    el.textContent=Math.round(target*(1-Math.pow(1-k,3))).toLocaleString("de-DE");
+    if(k<1) requestAnimationFrame(tick);
+  })(performance.now());
+}
+const revealEls = document.querySelectorAll(".reveal, .reveal-car, .num[data-count]");
+if("IntersectionObserver" in window){
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      e.target.classList.add("in");
+      if(e.target.matches(".num[data-count]")) countUp(e.target);
+      io.unobserve(e.target);
+    });
+  },{threshold:.25});
+  revealEls.forEach(el=>io.observe(el));
+} else {
+  // Fallback: sofort sichtbar
+  revealEls.forEach(el=>{ el.classList.add("in"); if(el.matches(".num[data-count]")) countUp(el); });
 }
 </script>
 </body>
