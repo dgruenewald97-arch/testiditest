@@ -33,9 +33,13 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; background:#fff;
   padding:12px 16px; border-radius:8px; font-size:clamp(11px,1.2vw,15px);
   text-align:left; max-width:170px; box-shadow:0 8px 22px rgba(0,0,0,.22); }
 
-/* WoW-Grafik (Platzhalter) – statisch, mittig */
-.cover-wow{ width:min(720px,82%); margin-top:13vh; z-index:2;
-  mix-blend-mode:multiply; pointer-events:none; }
+/* WoW-Grafik – ECHT: sobald saubere PNG hochgeladen ist, hier einsetzen */
+.cover-wow{ width:min(720px,82%); margin-top:13vh; z-index:2; pointer-events:none; }
+/* Temporärer, sauberer Text-Platzhalter bis die echte WoW-PNG da ist */
+.cover-wow-temp{ margin-top:13vh; z-index:2; font-family:"Arial Black","MMC",system-ui,sans-serif;
+  font-weight:900; font-size:clamp(78px,15vw,200px); line-height:.82; color:#fff;
+  transform:rotate(-5deg); letter-spacing:-.02em;
+  text-shadow:4px 4px 0 #ff5f2e, 9px 9px 0 #ff2d9b, 16px 16px 26px rgba(150,0,90,.4); }
 
 /* Fahrzeug */
 .cover-car{ width:min(720px,92%); margin-top:-4vh; z-index:1;
@@ -68,7 +72,9 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; background:#fff;
     <img class="cover-logo" src="assets/logo-mitsubishi-black.svg" alt="Mitsubishi Motors">
     <div class="cover-valid">WOW-Angebote gültig bis 31.12.2026</div>
 
-    <img class="cover-wow" src="assets/header/wow-PLATZHALTER.jpg" alt="WOW">
+    <!-- ECHTE WoW-Grafik hier einsetzen, sobald saubere PNG hochgeladen:
+         <img class="cover-wow" src="assets/header/wow.png" alt="WOW"> -->
+    <div class="cover-wow-temp">WoW!</div>
     <img class="cover-car" src="assets/cars/outlander.png" alt="Mitsubishi Outlander Diamant">
 
     <div class="cover-bar">
