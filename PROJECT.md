@@ -40,19 +40,32 @@ scroll-/intro-Animationen legen (WoW-Zoom/Puls, Parallax, Reveals).
 - Dependency-frei (kein CDN/Framework) → läuft live garantiert, auch offline.
 - Deploy: GitHub Pages via `.github/workflows/deploy-pages.yml` (aktiv).
 
-## 5. Step-Plan
+## 5. Flow (bestätigt)
+- **Hero = NUR das WoW-Bild** (fullwidth). Beim Öffnen Puls/Zoom.
+- Beim Scrollen wird WoW **größer + fadet aus**; wenn weg → **sanfter
+  Fullwidth-Übergang** zur 1. Angebotskarte → dann nächste, usw.
+- Jede Angebotskarte: Modellname, „Jetzt ab XX €" (Text + **lebende Zahl**),
+  Highlights, Preisbox, CTA „… Angebot anfordern" (→ modellspez. Formular),
+  Fahrzeug, Rechtszeile.
+
+## 6. Step-Plan
 **Phase 1 (Statik):**
-- [x] Step 1 — Cover/Hero (Logo, echte WoW-PNG, Outlander, rote 189 €-Leiste, „gültig bis")
-- [ ] Step 2 — ASX & Grandis (+ 8-Jahre-Garantie-Siegel)
-- [ ] Step 3 — Outlander Diamant & Black (Wallbox, Förderung)
-- [ ] Step 4 — Eclipse Cross & L200 „Coming Soon"
-- [ ] Step 5 — Abschluss/CTA „Angebot anfragen" + Argumente, Footer/Legal
+- [ ] Step A — Hero: nur WoW (fullwidth, statisch)
+- [ ] Step B — 1. Angebotskarte als **Template** (Outlander) — abnehmen!
+- [ ] Step C — restliche Modelle klonen (ASX, Grandis, Eclipse Cross, Outlander Black, L200)
+- [ ] Step D — Abschluss/CTA + Argumente + Footer/Legal
 
 **Phase 2 (Animation):**
-- [ ] WoW-Intro (Zoom + Puls beim Öffnen)
-- [ ] Scroll-Parallax (bidirektional)
-- [ ] Reveals / „Kick-in" der Angebote
+- [ ] WoW: Puls/Zoom beim Öffnen + Wachsen & Ausfaden beim Scrollen
+- [ ] Sanfte Fullwidth-Übergänge zwischen den Slides
+- [ ] Preis: hochzählen, dann nach rechts „swipen" zum Kaufpreis
+- [ ] Blickführungs-Linie („Straße"), die mit dem Scrollen wächst
 - [ ] Feinschliff Timing/Easing
+
+## 7. Status-Log
+- 2026-06-18: Reset, PROJECT.md, MMC-Font, echte Assets, echte WoW-PNG.
+- 2026-06-18: Flow bestätigt (Hero nur WoW; „Jetzt ab" als Text+lebende Zahl).
+  Start Phase 1 Statik (Hero + Template-Angebotskarte Outlander).
 
 ## 6. Status-Log
 - 2026-06-18: Reset auf sauberen Start. Assets + MMC-Font + Deploy bleiben.
