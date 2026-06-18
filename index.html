@@ -9,9 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;700;900&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
 <style>
 /* ===== Demo-Rahmen (nur Vorschau; das eigentliche Modul ist .wow-module) ===== */
+/* ===== Mitsubishi Markenschrift (MMC) ===== */
+@font-face{ font-family:"MMC"; font-weight:400; font-display:swap;
+  src:url("assets/fonts/MMCRegular.woff") format("woff"),
+      url("assets/fonts/MMCRegular.eot"); }
+@font-face{ font-family:"MMC"; font-weight:700; font-display:swap;
+  src:url("assets/fonts/MMCBold.woff2") format("woff2"),
+      url("assets/fonts/MMCBold.woff") format("woff"); }
+
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ scroll-behavior:smooth; }
-body{ font-family:"Archivo",system-ui,Arial,sans-serif; background:#0b0a0f; color:#fff; overflow-x:hidden; }
+body{ font-family:"MMC","Archivo",system-ui,Arial,sans-serif; background:#0b0a0f; color:#fff; overflow-x:hidden; }
 
 /* ============================================================
    WOW-MODUL  (fullwidth, einbettbar) — alle Klassen .wow-*
@@ -37,9 +45,17 @@ body{ font-family:"Archivo",system-ui,Arial,sans-serif; background:#0b0a0f; colo
   font-weight:900; text-transform:uppercase; line-height:1.15; padding:10px 14px; border-radius:8px;
   font-size:clamp(10px,1.2vw,14px); text-align:left; max-width:150px; box-shadow:0 8px 24px rgba(0,0,0,.3); }
 /* WoW-Grafik (Platzhalter) – wächst & blendet aus beim Scrollen */
+/* WoW-Grafik: Intro beim Öffnen = Zoom-in + ein Puls */
 .wow-graphic{ position:absolute; top:38%; left:50%; transform:translate(-50%,-50%) scale(1);
   width:min(760px,86%); z-index:2; mix-blend-mode:multiply; pointer-events:none;
-  will-change:transform,opacity; }
+  will-change:transform,opacity;
+  animation:wow-intro 1.15s cubic-bezier(.18,1.3,.3,1) both; }
+@keyframes wow-intro{
+  0%{   transform:translate(-50%,-50%) scale(0);    opacity:0; }
+  55%{  transform:translate(-50%,-50%) scale(1.14);  opacity:1; }
+  72%{  transform:translate(-50%,-50%) scale(.95); }
+  86%{  transform:translate(-50%,-50%) scale(1.04); }
+  100%{ transform:translate(-50%,-50%) scale(1);    opacity:1; } }
 .wow-hero-car{ position:relative; z-index:3; width:min(680px,90%); margin-top:14vh;
   filter:drop-shadow(0 30px 40px rgba(0,0,0,.35)); will-change:transform; }
 .wow-offerchip{ position:relative; z-index:4; margin-top:-2vh;
@@ -225,8 +241,15 @@ function update(){
   // HERO: WoW wächst & blendet aus, Auto leicht versetzt (Parallax)
   const hr = hero.getBoundingClientRect();
   const hp = clamp(-hr.top / vh, 0, 1);            // 0 oben -> 1 wenn eine Bildhöhe gescrollt
-  wowG.style.transform = `translate(-50%,-50%) scale(${(1 + hp*1.9).toFixed(3)})`;
-  wowG.style.opacity   = (1 - hp*1.15).toFixed(3);
+  // Am Seitenanfang (hp=0) NICHT eingreifen -> CSS-Intro (Zoom+Puls) darf laufen.
+  // Erst beim Scrollen übernimmt die Parallax das Wachsen/Ausblenden.
+  if(hp>0){
+    wowG.style.transform = `translate(-50%,-50%) scale(${(1 + hp*1.9).toFixed(3)})`;
+    wowG.style.opacity   = (1 - hp*1.15).toFixed(3);
+  } else {
+    wowG.style.transform = "";   // CSS (Intro / Endzustand) übernimmt
+    wowG.style.opacity   = "";
+  }
   heroCar.style.transform = `translateY(${(hp*60).toFixed(1)}px)`;
 
   // Angebots-Bilder: Parallax-Drift (Bild im Rahmen verschoben)
