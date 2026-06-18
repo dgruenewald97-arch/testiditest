@@ -32,8 +32,7 @@ scroll-/intro-Animationen legen (WoW-Zoom/Puls, Parallax, Reveals).
 - **Flyer-Seiten (Screenshots):** `assets/offers/` (Referenz fürs 1:1-Nachbauen).
 - **Marken-Schrift:** `assets/fonts/` → MMC Regular/Bold (eingebunden via @font-face).
 - **Logo:** `assets/logo-mitsubishi-black.svg` (+ rote Variante).
-- **WoW-Grafik:** `assets/header/wow-PLATZHALTER.jpg` ⚠️ **Wasserzeichen** →
-  muss durch saubere Grafik ersetzt werden (User lädt hoch).
+- **WoW-Grafik:** `assets/header/wow.png` ✅ saubere, transparente PNG (vom User).
 
 ## 4. Entscheidungen
 - Statik zuerst, dann Animation (s. o.).
@@ -43,7 +42,7 @@ scroll-/intro-Animationen legen (WoW-Zoom/Puls, Parallax, Reveals).
 
 ## 5. Step-Plan
 **Phase 1 (Statik):**
-- [ ] Step 1 — Cover/Hero (Logo, WoW, Outlander, rote 189 €-Leiste, „gültig bis")
+- [x] Step 1 — Cover/Hero (Logo, echte WoW-PNG, Outlander, rote 189 €-Leiste, „gültig bis")
 - [ ] Step 2 — ASX & Grandis (+ 8-Jahre-Garantie-Siegel)
 - [ ] Step 3 — Outlander Diamant & Black (Wallbox, Förderung)
 - [ ] Step 4 — Eclipse Cross & L200 „Coming Soon"
