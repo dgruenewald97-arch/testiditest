@@ -50,13 +50,17 @@ scroll-/intro-Animationen legen (WoW-Zoom/Puls, Parallax, Reveals).
 
 ## 6. Step-Plan
 **Phase 1 (Statik):**
-- [ ] Step A — Hero: nur WoW (fullwidth, statisch)
-- [ ] Step B — 1. Angebotskarte als **Template** (Outlander) — abnehmen!
-- [ ] Step C — restliche Modelle klonen (ASX, Grandis, Eclipse Cross, Outlander Black, L200)
+- [x] Step A — Hero: nur WoW (fullwidth) — steht inkl. Animation (s. Phase 2)
+- [x] Step B — 1. Angebotskarte als **Template** (Outlander) — abgenommen
+- [x] Step C — restliche Modelle als Klone (ASX, Grandis, Eclipse Cross, Outlander Black, L200)
+      → 6 Karten total, Zickzack (jede 2. `is-flip`), L200 = Coming Soon (kein Preis, „vormerken").
+      Preise/Werte = Platzhalter (Flyer zeigt XXX). Black & L200-Fotos = Platzhalter.
 - [ ] Step D — Abschluss/CTA + Argumente + Footer/Legal
 
 **Phase 2 (Animation):**
-- [ ] WoW: Puls/Zoom beim Öffnen + Wachsen & Ausfaden beim Scrollen
+- [x] WoW: Puls/Zoom beim Öffnen + Wachsen & Ausfaden beim Scrollen
+      (gepinnt via sticky, lang/cinematisch 240vh, Climax ~4× + Fade bis 96 %;
+      Slogan „Jetzt wird's groß." + Scroll-Hint „Runterscrollen & staunen ↓")
 - [ ] Sanfte Fullwidth-Übergänge zwischen den Slides
 - [ ] Preis: hochzählen, dann nach rechts „swipen" zum Kaufpreis
 - [ ] Blickführungs-Linie („Straße"), die mit dem Scrollen wächst
@@ -66,10 +70,58 @@ scroll-/intro-Animationen legen (WoW-Zoom/Puls, Parallax, Reveals).
 - 2026-06-18: Reset, PROJECT.md, MMC-Font, echte Assets, echte WoW-PNG.
 - 2026-06-18: Flow bestätigt (Hero nur WoW; „Jetzt ab" als Text+lebende Zahl).
   Start Phase 1 Statik (Hero + Template-Angebotskarte Outlander).
+- 2026-06-18: Hero-Animation fertig & abgenommen. Bugs gefixt: `overflow-x:hidden`
+  (brach sticky → WoW scrollte weg, jetzt `clip`) + Intro-`fill-mode:both` überschrieb
+  den Scroll-Zoom (jetzt beim ersten Scroll abgeschaltet). Slogan + Scroll-Hint ergänzt.
+- 2026-06-18: Angebotskarten-Template (Outlander) steht. Entscheidung UX: **eine Karte
+  = genau EIN Viewport** (100vh, Schriftgrößen an vh gekoppelt) + **Scroll-Snap**
+  (`proximity`) für süchtig-machenden Rhythmus. Aufbau: 2 Spalten — Infos links
+  (Kicker, Preis 1:1 weiß+Schatten, Highlights, Preisbox mit Farbrahmen, CTA, Legal),
+  Auto als Held rechts, Wallbox schwebt oben (Platzhalter-SVG: assets/placeholders/wallbox.svg).
+  Klon-System: `.offer.is-flip` spiegelt, `--accent-a/b/c` pro Karte. 2. Karte
+  (Outlander Black, violetter Accent, gespiegelt) als Klon-Test angelegt.
+  OFFEN/Platzhalter: Black hat kein eigenes Foto (nutzt Outlander-PNG), Preis 219 € = Platzhalter
+  (Flyer zeigt XXX). Noch fehlend: 8-Jahre-Siegel, „Litho Diamant"-Kennzeichen.
+  Nächste Modelle: ASX, Grandis, Eclipse Cross, L200 (Coming Soon).
+- 2026-06-18: UX-Feedback umgesetzt: (1) Scroll-Leiste = durchgehender Gesamt-Fortschritt
+  (Hero+Karten), immer sichtbar (Führung).
+- 2026-06-18: Scrolling NEU gedacht. Wheel-Hijack RAUS (fühlte sich auf Laptop/Trackpad
+  schlecht an, kämpfte gegen natives Scrollen). Jetzt rein NATIV: `scroll-snap-type:y proximity`
+  + `.offer{scroll-snap-align:start}`. Hero hat KEIN snap-align → frei für Zoom-Scrub.
+  `mandatory` bewusst NICHT (würde Hero brechen). → fühlt sich smooth/nativ an wie der Hero.
+- 2026-06-18: Layout-Regel FINAL (mit User festgelegt): **Zickzack NUR auf Desktop**.
+  Standard-Karte = Info links / Auto rechts. `.is-flip`-Karte = Auto LINKS / Info rechts,
+  Info bleibt links-bündig IN ihrer (rechten) Spalte (`align-items:flex-start`, kein Rechtsbündig).
+  Flip-CSS liegt in `@media (min-width:821px)` → auf **Mobile kein Flip** (alle Karten gestapelt:
+  Auto oben / Info unten). Klon-Regel: jede 2. Karte bekommt `.is-flip` für den Zickzack;
+  sonst nur `--accent` + Inhalt tauschen. Karte 2 (Outlander Black) = `.is-flip`.
+  Verifiziert: Desktop K1 Auto-rechts / K2 Auto-links; Mobile beide Auto-oben.
+
+## 6a. SESSION-ÜBERGABE (Stand für die nächste KI-Session)
+**Wo wir stehen (2026-06-18):**
+- Komplette Single-Page in `index.html` (dependency-frei). Hero (WoW-Zoom, gepinnt) + **6
+  Angebotskarten** im Zickzack: Outlander Diamant, Outlander Black, ASX, Grandis, Eclipse Cross,
+  L200 (Coming Soon). Jede Karte = 1 Viewport, natives `scroll-snap proximity`, Fortschrittsleiste.
+- **Klon-Regel:** neue Karte = `<section class="offer [is-flip]" style="--accent-a/b/c:…">` +
+  Inhalt tauschen. Jede 2. Karte `is-flip` (Zickzack, nur Desktop). Wallbox-Platzhalter:
+  `assets/placeholders/wallbox.svg`. Eindeutige `textPath`-ID pro Karte (`wbArc-<modell>`).
+
+**OFFEN / Platzhalter (wichtig für nächste Session):**
+- Alle **Preise/Leasingraten + Preisbox-Werte = Platzhalter** (Flyer zeigt „XXX") → echte Zahlen einsetzen.
+- **Outlander-Black-Foto** = nutzt Outlander-PNG; **L200** nutzt l200.png ohne finale Aufbereitung.
+- **Wallbox-Grafik** = Platzhalter-SVG; **8-Jahre-Garantie-Siegel** & **„Litho Diamant"-Kennzeichen** fehlen noch.
+
+**Nächste sinnvolle Schritte:**
+1. **Step D** — Abschluss-/CTA-Sektion + Pflicht-Argumente (Wallbox 599 €, bis 4.500/6.000 € Förderung,
+   8 J. Garantie, gültig bis 31.12.2026) + Footer/Legal.
+2. **Phase 2 Karten-Animationen** — Reveal beim Scrollen (Auto fährt rein, Preis zählt hoch & „swipet"
+   zum Kaufpreis), Blickführungs-„Straße". Bringt den „Sog".
+3. Echte Assets/Preise einpflegen, sobald vorhanden.
 
 ## 6. Status-Log
 - 2026-06-18: Reset auf sauberen Start. Assets + MMC-Font + Deploy bleiben.
   Beginn Phase 1, Step 1 (statische Cover-Seite).
+- 2026-06-18: Step C fertig (6 Karten, Zickzack). Session gesichert & auf `main` (testiditest) gepusht.
 
 ## 7. Betrieb
 - **Live:** https://dgruenewald97-arch.github.io/testiditest/ (Hard-Reload nach Push)

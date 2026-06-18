@@ -13,7 +13,10 @@
       url("assets/fonts/MMCBold.woff") format("woff"); }
 
 *{ box-sizing:border-box; margin:0; padding:0; }
-html,body{ overflow-x:hidden; }
+html,body{ overflow-x:clip; }  /* clip statt hidden: kein Scroll-Container → position:sticky bleibt heil */
+/* Natives, sanftes Snap NUR für die Karten (proximity arbeitet MIT dem Scrollen,
+   kein Hijack). Der Hero hat kein snap-align → bleibt frei für den Zoom-Scrub. */
+html{ scroll-snap-type:y proximity; }
 body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 .wow-module sup{ font-size:.55em; vertical-align:super; }
 
@@ -23,11 +26,30 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
     #ff8a3a 0%, #ff6f6e 18%, #ff5a92 38%, #ff3fa6 58%, #e23bbf 78%, #b23be0 100%); }
 
 /* ---------- HERO (nur WoW; gepinnt, scrubt beim Scrollen) ---------- */
-.hero{ position:relative; width:100%; height:135vh; }
-.hero-sticky{ position:sticky; top:0; height:100vh; display:flex;
+/* Langer, cinematischer Scrollweg: WoW wächst satt & fadet spät aus. */
+.hero{ position:relative; width:100%; height:240vh; }
+.hero-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column;
   align-items:center; justify-content:center; overflow:hidden; }
-.hero-wow{ width:min(460px,64%); will-change:transform,opacity;
+.hero-wow{ width:min(460px,64%); will-change:transform,opacity; transform-origin:center center;
   animation:wow-intro 1.05s cubic-bezier(.18,1.35,.3,1) both; }
+
+/* Slogan – blendet NACH dem Intro-Sprung ein (Transform skaliert das WoW, nicht das Layout,
+   darum bleibt der Slogan ruhig darunter stehen). */
+.hero-slogan{ margin-top:3.4vh; font-weight:700; font-style:italic;
+  font-size:clamp(20px,3.2vw,40px); color:#fff; text-align:center; letter-spacing:.01em;
+  text-shadow:0 4px 20px rgba(150,0,70,.4);
+  opacity:0; transform:translateY(14px);
+  animation:slogan-in .7s cubic-bezier(.2,.9,.25,1) 1.0s both; }
+@keyframes slogan-in{ to{ opacity:1; transform:translateY(0); } }
+
+/* Scroll-Hinweis unten mittig – pulsierender Pfeil, lädt zum Scrollen ein. */
+.scroll-hint{ position:absolute; bottom:7vh; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:7px; white-space:nowrap;
+  color:#fff; font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  opacity:0; animation:hint-in .7s ease 1.35s both; pointer-events:none; }
+.scroll-hint .arrow{ font-size:22px; line-height:1; animation:hint-bounce 1.6s ease-in-out infinite; }
+@keyframes hint-in{ to{ opacity:.9; } }
+@keyframes hint-bounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(8px); } }
 @keyframes wow-intro{
   0%{ transform:scale(0); opacity:0; }
   55%{ transform:scale(1.12); opacity:1; }
@@ -35,21 +57,48 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
   86%{ transform:scale(1.05); }
   100%{ transform:scale(1); opacity:1; } }
 
-/* ---------- ANGEBOTSKARTE (Template) ---------- */
-.offer{ position:relative; width:100%; min-height:100vh; display:flex; align-items:center; padding:8vh 0; }
-.offer .cap{ width:min(1240px,92%); margin:0 auto; display:grid;
-  grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
-.offer.is-flip .visual{ order:-1; }
+/* ---------- ANGEBOTSKARTE (Template) ----------
+   Eine Karte = genau EIN Viewport. 2 Spalten: Infos links, Auto-Held rechts.
+   Schriftgrößen an vh gekoppelt, damit alles in 100vh passt. */
+.offer{ position:relative; width:100%; min-height:100vh; display:flex; align-items:center;
+  padding:5vh 0; scroll-snap-align:start; }
+.offer .cap{ width:min(1300px,94%); margin:0 auto; display:grid;
+  grid-template-columns:1fr 1.12fr; gap:clamp(24px,3.5vw,60px); align-items:center; }
+
+/* INFO-Spalte (links) – Inhalt an die linke Außenkante (Basis für sauberen Spiegel) */
+.col-info{ display:flex; flex-direction:column; align-items:flex-start; gap:clamp(8px,1.5vh,18px); min-width:0; }
+.kicker{ font-weight:700; font-size:clamp(18px,2.2vw,28px); line-height:1.12; }
+.kicker-sub{ display:block; font-weight:700; font-size:clamp(12px,1.3vw,16px); opacity:.85; margin-top:2px; }
+.buy{ display:flex; align-items:center; gap:clamp(16px,1.6vw,24px); flex-wrap:wrap; margin-top:4px; }
+
+/* AUTO-Spalte (rechts): bildschirmhoher Held, Wallbox schwebt oben, Förderzeile unten */
+.col-car{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+.foerderung{ font-weight:700; text-transform:uppercase; letter-spacing:.02em; text-align:center;
+  font-size:clamp(14px,1.7vw,21px); }
+
+/* Zickzack NUR auf Desktop: .is-flip-Karten = Auto LINKS, Info RECHTS.
+   Info bleibt links-bündig in ihrer (rechten) Spalte. Mobile bleibt gestapelt. */
+@media (min-width:821px){
+  .offer.is-flip .cap{ grid-template-columns:1.12fr 1fr; }  /* Auto-Spalte (links) breiter */
+  .offer.is-flip .col-car{ order:1; }                       /* Auto links */
+  .offer.is-flip .col-info{ order:2; }                      /* Info rechts (links-bündig in der Spalte) */
+  .offer.is-flip .wallbox{ right:auto; left:0; }            /* Wallbox oben-links am Auto */
+}
 
 .model{ font-family:"MMC"; font-weight:700; font-size:clamp(30px,4.4vw,56px); line-height:1; }
 .model-sub{ font-weight:700; font-size:clamp(16px,2vw,24px); margin-top:2px; opacity:.95; }
 .hl-title{ font-weight:700; margin:22px 0 8px; }
 .hl{ list-style:none; }
-.hl li{ position:relative; padding:4px 0 4px 20px; font-size:15px; opacity:.96; }
+.hl li{ position:relative; padding:3px 0 3px 18px; font-size:clamp(13px,1.6vh,15px); opacity:.96; }
 .hl li::before{ content:"•"; position:absolute; left:2px; }
 
-.pricebox{ margin-top:22px; background:#fff; color:#15131c; border-radius:14px;
-  padding:16px 20px; display:inline-block; box-shadow:0 18px 40px rgba(0,0,0,.25); }
+.pricebox{ color:#15131c; border-radius:18px;
+  padding:18px 22px; display:inline-block; box-shadow:0 18px 44px rgba(120,0,60,.32);
+  /* Dicker Farbrahmen im Kampagnen-Verlauf (weiße Box innen, Verlauf als Border). */
+  border:7px solid transparent;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg, var(--accent-a,#ff8a3a), var(--accent-b,#ff3fa6) 55%, var(--accent-c,#b23be0)) border-box; }
 .pricebox .row{ display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:baseline; padding:4px 0; }
 .pricebox .op{ font-family:"MMC"; font-weight:700; font-size:22px; width:18px; }
 .pricebox .val{ font-family:"MMC"; font-weight:700; font-size:clamp(20px,2.4vw,28px); }
@@ -57,36 +106,58 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 .pricebox .total{ border-top:2px solid #eee; margin-top:4px; padding-top:8px; }
 .pricebox .total .val{ color:#e2001a; }
 
-.cta{ display:inline-block; margin-top:24px; background:#15131c; color:#fff; font-weight:700;
-  padding:15px 30px; border-radius:10px; text-decoration:none; }
+.cta{ display:inline-block; background:#15131c; color:#fff; font-weight:700;
+  padding:14px 26px; border-radius:10px; text-decoration:none; white-space:nowrap; }
 .cta b{ text-decoration:underline; }
-.legal{ margin-top:16px; font-size:11px; line-height:1.4; opacity:.8; max-width:560px; }
+.legal{ margin-top:2px; font-size:11px; line-height:1.4; opacity:.8; max-width:560px; }
 
-/* Visual-Seite: „Jetzt ab" (näher an Vorlage) + Auto */
-.visual{ text-align:center; }
-.jetztab{ font-family:"MMC"; font-weight:700; font-style:italic; color:#fff;
-  transform:skewX(-7deg); display:inline-block; line-height:.86;
-  -webkit-text-stroke:2px #ff2d7a; paint-order:stroke fill;
-  text-shadow:3px 3px 0 #ff2d7a, 6px 7px 0 rgba(160,0,80,.5), 10px 12px 18px rgba(120,0,60,.35); }
-.jetztab .lead{ display:block; font-size:clamp(26px,3.6vw,48px); }
-.jetztab .rate{ display:block; font-size:clamp(64px,10vw,138px); margin-top:-.06em; }
-.jetztab .rate .eur{ font-size:.6em; }
-.offer-car{ display:block; width:min(560px,100%); margin:8px auto 0;
-  filter:drop-shadow(0 26px 32px rgba(0,0,0,.3)); }
+/* Preis 1:1 zur Vorlage: reines WEISS, fett, leicht kursiv (skew – MMC hat keine
+   eigene Italic-Datei), weicher Schatten statt Outline-Stroke. */
+.jetztab{ font-family:"MMC"; font-weight:700; color:#fff; transform:skewX(-8deg);
+  display:inline-block; line-height:.82; text-align:left;
+  text-shadow:2px 3px 0 rgba(150,20,95,.20), 0 14px 30px rgba(120,0,60,.38); }
+.jetztab .lead{ display:block; font-size:clamp(24px,3.4vh,48px); }
+.jetztab .rate{ display:block; font-size:clamp(54px,9vh,116px); margin-top:-.04em; }
+.jetztab .rate .eur{ font-size:.62em; }
+.jetztab .rate sup{ font-size:.32em; }
+.jetztab .ohne{ display:block; font-size:clamp(15px,2.1vh,26px); letter-spacing:.04em;
+  text-transform:uppercase; margin-top:.1em; }
+
+/* Wallbox-Badge: „+" + Kreis mit Platzhalter-Grafik und gebogenem Text.
+   Schwebt oben am Auto (absolut in der .col-car). */
+.wallbox{ position:absolute; top:0; right:0; z-index:2; display:flex; align-items:center; gap:6px; }
+.wb-plus{ font-family:"MMC"; font-weight:700; color:#fff; line-height:1;
+  font-size:clamp(34px,4vw,56px); text-shadow:0 8px 18px rgba(120,0,60,.3); }
+.wb-circle{ position:relative; width:clamp(148px,17vw,196px); aspect-ratio:1;
+  border-radius:50%; background:rgba(255,255,255,.14); }
+.wb-circle .wb-img{ position:absolute; left:50%; top:56%; transform:translate(-50%,-50%);
+  width:44%; height:auto; filter:drop-shadow(0 10px 16px rgba(0,0,0,.35)); }
+.wb-arc{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.wb-arc text{ fill:#fff; font-family:"MMC"; font-weight:700; font-size:13px; }
+
+.offer-car{ display:block; width:100%; max-width:min(720px,100%); max-height:60vh; object-fit:contain;
+  filter:drop-shadow(0 30px 40px rgba(0,0,0,.34)); }
 
 /* ---------- Scroll-Fortschritt (kleiner weißer Strich, unten mittig) ---------- */
 .scrollbar{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:40;
-  width:130px; height:4px; border-radius:4px; background:rgba(255,255,255,.35); overflow:hidden; }
+  width:130px; height:4px; border-radius:4px; background:rgba(255,255,255,.35); overflow:hidden;
+  opacity:var(--sb-op,1); transition:opacity .4s ease; }
 .scrollbar .fill{ height:100%; width:var(--sp,0%); background:#fff; border-radius:4px;
   transition:width .12s ease-out; }
 
 @media (max-width:820px){
-  .offer .cap{ grid-template-columns:1fr; gap:26px; }
-  .offer.is-flip .visual{ order:0; }
+  .offer{ min-height:auto; padding:8vh 0; scroll-snap-align:none; }
+  .offer .cap{ grid-template-columns:1fr; gap:24px; }
+  .col-info{ order:2; }
+  .col-car{ order:1; }
+  .offer-car{ max-height:46vh; }
   .hero-wow{ width:78%; }
 }
 @media (prefers-reduced-motion:reduce){
   .hero-wow{ animation:none; }
+  .hero-slogan{ animation:none; opacity:1; transform:none; }
+  .scroll-hint{ animation:none; opacity:.9; }
+  .scroll-hint .arrow{ animation:none; }
 }
 </style>
 </head>
@@ -98,34 +169,257 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
   <section class="hero" id="hero">
     <div class="hero-sticky">
       <img class="hero-wow" id="heroWow" src="assets/header/wow.png" alt="WOW">
+      <p class="hero-slogan" id="heroSlogan">Jetzt wird&rsquo;s gro&szlig;.</p>
+      <div class="scroll-hint" id="scrollHint">
+        <span>Runterscrollen &amp; staunen</span>
+        <span class="arrow" aria-hidden="true">&darr;</span>
+      </div>
     </div>
   </section>
 
-  <!-- ANGEBOTSKARTE Template (Outlander) -->
-  <section class="offer">
+  <!-- ANGEBOTSKARTE Template (Outlander) – Flyer-Aufbau -->
+  <section class="offer" style="--accent-a:#ff8a3a; --accent-b:#ff3fa6; --accent-c:#b23be0;">
     <div class="cap">
-      <div class="text">
-        <h2 class="model">Outlander</h2>
-        <p class="model-sub">Der souveräne Plug-in Hybrid-SUV</p>
-        <p class="hl-title">Highlights:</p>
-        <ul class="hl">
-          <li>12,3" Infotainment-System mit Google-Navigation</li>
-          <li>360°-Umgebungskameras · Super All Wheel Control</li>
-          <li>Dynamic Sound Yamaha Premium · Klimaautomatik (2-Zonen)</li>
-          <li>Standheizung · LED-Scheinwerfer · Mitsubishi Motors App</li>
-        </ul>
-        <div class="pricebox">
-          <div class="row"><span class="op"></span><span class="val">49.990 €</span><span class="lbl">unverb.<br>Preisempf.</span></div>
-          <div class="row"><span class="op">–</span><span class="val">10.000 €</span><span class="lbl">empfohl.<br>Aktionsrabatt</span></div>
-          <div class="row total"><span class="op">=</span><span class="val">ab 35.490 €</span><span class="lbl">rechnerischer<br>Aufwand<sup>x</sup></span></div>
+
+      <!-- INFO links: Kicker, Preis, Highlights, Preisbox+CTA, Legal -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Outlander Diamant<span class="kicker-sub">Monatlich leasen · Der souveräne Plug-in Hybrid-SUV</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate">189 <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
         </div>
-        <br>
-        <a class="cta" href="#anfrage-outlander"><b>Outlander Angebot</b> anfordern</a>
+        <ul class="hl">
+          <li>12,3" Infotainment mit Google-Navigation · 360°-Kameras</li>
+          <li>Super All Wheel Control · Yamaha Premium Sound</li>
+          <li>Klimaautomatik · Standheizung · LED · Mitsubishi App</li>
+        </ul>
+        <div class="buy">
+          <div class="pricebox">
+            <div class="row"><span class="op"></span><span class="val">49.990 €</span><span class="lbl">unverb.<br>Preisempf.</span></div>
+            <div class="row"><span class="op">–</span><span class="val">10.000 €</span><span class="lbl">empfohl.<br>Aktionsrabatt</span></div>
+            <div class="row total"><span class="op">=</span><span class="val">ab 35.490 €</span><span class="lbl">rechnerischer<br>Aufwand<sup>x</sup></span></div>
+          </div>
+          <a class="cta" href="#anfrage-outlander"><b>Outlander Angebot</b> anfordern</a>
+        </div>
         <p class="legal">Outlander Plug-in Hybrid Diamant 4WD<sup>x</sup>: Energieverbrauch 16 kWh/100 km Strom &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B; gewichtet kombinierte Werte.**</p>
       </div>
-      <div class="visual">
-        <div class="jetztab"><span class="lead">Jetzt ab</span><span class="rate">189 <span class="eur">€</span><sup>x</sup></span></div>
+
+      <!-- AUTO rechts: Held + schwebende Wallbox + Förderzeile -->
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-outlander" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-outlander" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox – Platzhalter">
+          </div>
+        </div>
         <img class="offer-car" src="assets/cars/outlander.png" alt="Mitsubishi Outlander Diamant">
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Outlander Black (Zickzack: Auto links auf Desktop; violetter Accent) -->
+  <section class="offer is-flip" style="--accent-a:#ff3fa6; --accent-b:#b23be0; --accent-c:#6c2bd9;">
+    <div class="cap">
+
+      <!-- INFO: Kicker, Preis, Highlights, Preisbox+CTA, Legal -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Outlander Black<span class="kicker-sub">Monatlich leasen · Die dunkle Sonderedition</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate">219 <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>Black-Edition: schwarze Akzente · dunkle 20"-Leichtmetallräder</li>
+          <li>12,3" Infotainment mit Google-Navigation · 360°-Kameras</li>
+          <li>Super All Wheel Control · Yamaha Premium Sound</li>
+        </ul>
+        <div class="buy">
+          <div class="pricebox">
+            <div class="row"><span class="op"></span><span class="val">54.990 €</span><span class="lbl">unverb.<br>Preisempf.</span></div>
+            <div class="row"><span class="op">–</span><span class="val">10.000 €</span><span class="lbl">empfohl.<br>Aktionsrabatt</span></div>
+            <div class="row total"><span class="op">=</span><span class="val">ab 44.990 €</span><span class="lbl">rechnerischer<br>Aufwand<sup>x</sup></span></div>
+          </div>
+          <a class="cta" href="#anfrage-outlander-black"><b>Outlander Black Angebot</b> anfordern</a>
+        </div>
+        <p class="legal">Outlander Black Plug-in Hybrid 4WD<sup>x</sup>: Energieverbrauch 16 kWh/100 km Strom &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B; gewichtet kombinierte Werte. Preis &amp; Werte vorläufig (Platzhalter).**</p>
+      </div>
+
+      <!-- AUTO: Held + schwebende Wallbox + Förderzeile -->
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-black" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-black" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox – Platzhalter">
+          </div>
+        </div>
+        <img class="offer-car" src="assets/cars/outlander.png" alt="Mitsubishi Outlander Black (Platzhalter-Foto)">
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE ASX Diamant (normal; Orange→Coral→Pink) -->
+  <section class="offer" style="--accent-a:#ff8a3a; --accent-b:#ff6f6e; --accent-c:#ff3fa6;">
+    <div class="cap">
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot ASX Diamant<span class="kicker-sub">Monatlich leasen · Der kompakte Allrounder</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate">159 <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>LED-Scheinwerfer · Apple CarPlay &amp; Android Auto</li>
+          <li>Klimaautomatik · Rückfahrkamera · Tempomat</li>
+          <li>Mild-Hybrid · 18"-Leichtmetallräder</li>
+        </ul>
+        <div class="buy">
+          <div class="pricebox">
+            <div class="row"><span class="op"></span><span class="val">32.990 €</span><span class="lbl">unverb.<br>Preisempf.</span></div>
+            <div class="row"><span class="op">–</span><span class="val">6.000 €</span><span class="lbl">empfohl.<br>Aktionsrabatt</span></div>
+            <div class="row total"><span class="op">=</span><span class="val">ab 26.990 €</span><span class="lbl">rechnerischer<br>Aufwand<sup>x</sup></span></div>
+          </div>
+          <a class="cta" href="#anfrage-asx"><b>ASX Angebot</b> anfordern</a>
+        </div>
+        <p class="legal">ASX Diamant<sup>x</sup>: Verbrauchs- &amp; Emissionswerte nach WLTP; werden noch ergänzt. Preis &amp; Werte vorläufig (Platzhalter).**</p>
+      </div>
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-asx" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-asx" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox – Platzhalter">
+          </div>
+        </div>
+        <img class="offer-car" src="assets/cars/asx.png" alt="Mitsubishi ASX Diamant">
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Grandis Diamant (is-flip; Pink→Magenta→Violett) -->
+  <section class="offer is-flip" style="--accent-a:#ff5a92; --accent-b:#ff3fa6; --accent-c:#b23be0;">
+    <div class="cap">
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Grandis Diamant<span class="kicker-sub">Monatlich leasen · Der geräumige Familien-SUV</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate">199 <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>7 Sitze · Panorama-Glasdach · 360°-Kameras</li>
+          <li>12,3" Infotainment · adaptiver Tempomat</li>
+          <li>Voll-Hybrid · 19"-Leichtmetallräder</li>
+        </ul>
+        <div class="buy">
+          <div class="pricebox">
+            <div class="row"><span class="op"></span><span class="val">44.990 €</span><span class="lbl">unverb.<br>Preisempf.</span></div>
+            <div class="row"><span class="op">–</span><span class="val">8.000 €</span><span class="lbl">empfohl.<br>Aktionsrabatt</span></div>
+            <div class="row total"><span class="op">=</span><span class="val">ab 36.990 €</span><span class="lbl">rechnerischer<br>Aufwand<sup>x</sup></span></div>
+          </div>
+          <a class="cta" href="#anfrage-grandis"><b>Grandis Angebot</b> anfordern</a>
+        </div>
+        <p class="legal">Grandis Diamant<sup>x</sup>: Verbrauchs- &amp; Emissionswerte nach WLTP; werden noch ergänzt. Preis &amp; Werte vorläufig (Platzhalter).**</p>
+      </div>
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-grandis" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-grandis" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox – Platzhalter">
+          </div>
+        </div>
+        <img class="offer-car" src="assets/cars/grandis.png" alt="Mitsubishi Grandis Diamant">
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Eclipse Cross (normal; Coral→Pink→Magenta) -->
+  <section class="offer" style="--accent-a:#ff6f6e; --accent-b:#ff3fa6; --accent-c:#e23bbf;">
+    <div class="cap">
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Eclipse Cross<span class="kicker-sub">Monatlich leasen · Das Plug-in-Hybrid-Coupé-SUV</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate">179 <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>Plug-in Hybrid · Super All Wheel Control</li>
+          <li>LED-Matrix · Head-up-Display · 360°-Kameras</li>
+          <li>Klimaautomatik · 18"-Leichtmetallräder</li>
+        </ul>
+        <div class="buy">
+          <div class="pricebox">
+            <div class="row"><span class="op"></span><span class="val">39.990 €</span><span class="lbl">unverb.<br>Preisempf.</span></div>
+            <div class="row"><span class="op">–</span><span class="val">7.000 €</span><span class="lbl">empfohl.<br>Aktionsrabatt</span></div>
+            <div class="row total"><span class="op">=</span><span class="val">ab 32.990 €</span><span class="lbl">rechnerischer<br>Aufwand<sup>x</sup></span></div>
+          </div>
+          <a class="cta" href="#anfrage-eclipse-cross"><b>Eclipse Cross Angebot</b> anfordern</a>
+        </div>
+        <p class="legal">Eclipse Cross Plug-in Hybrid<sup>x</sup>: Verbrauchs- &amp; Emissionswerte nach WLTP; werden noch ergänzt. Preis &amp; Werte vorläufig (Platzhalter).**</p>
+      </div>
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-eclipse" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-eclipse" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox – Platzhalter">
+          </div>
+        </div>
+        <img class="offer-car" src="assets/cars/eclipse-cross.png" alt="Mitsubishi Eclipse Cross">
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE L200 (is-flip; Coming Soon, Violett→Magenta→Pink) -->
+  <section class="offer is-flip" style="--accent-a:#b23be0; --accent-b:#e23bbf; --accent-c:#ff3fa6;">
+    <div class="cap">
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot L200<span class="kicker-sub">Der neue Pickup · Bald verfügbar</span></p>
+        <div class="jetztab">
+          <span class="lead">Der neue</span>
+          <span class="rate">L200</span>
+          <span class="ohne">Coming Soon</span>
+        </div>
+        <ul class="hl">
+          <li>Robuster Pickup · hohe Anhänge- &amp; Nutzlast</li>
+          <li>Allrad · moderne Assistenzsysteme</li>
+          <li>Preise &amp; WOW-Aktion folgen in Kürze</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="#vormerken-l200"><b>L200 vormerken</b></a>
+        </div>
+        <p class="legal">Abbildung zeigt mögliche Sonderausstattung. Markteinführung, Preise &amp; Aktionsdetails werden noch bekannt gegeben. (Platzhalter)</p>
+      </div>
+      <div class="col-car">
+        <img class="offer-car" src="assets/cars/l200.png" alt="Mitsubishi L200 (Coming Soon)">
+        <p class="foerderung">Bald verfügbar · jetzt vormerken</p>
       </div>
     </div>
   </section>
@@ -140,11 +434,15 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 /* Reine JS-Animation, keine Abhängigkeit. Scroll-positionsgesteuert. */
 const heroEl = document.getElementById("hero");
 const wow    = document.getElementById("heroWow");
+const slogan = document.getElementById("heroSlogan");
+const hint   = document.getElementById("scrollHint");
 const spFill = document.getElementById("spFill");
 const clamp  = (v,a,b)=>Math.max(a,Math.min(b,v));
 
-let ticking=false;
+let ticking=false, introKilled=false;
 function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(update); } }
+const FADE_START = 0.60;   // bis hierhin steht das WoW satt & scharf, dann Ausfaden
+const FADE_END   = 0.96;   // hier ist das WoW komplett weg (großer Climax kurz vorm Ende)
 function update(){
   const vh = innerHeight;
 
@@ -152,21 +450,45 @@ function update(){
   const range = heroEl.offsetHeight - vh;          // scrollbarer Bereich des Hero
   const prog  = clamp(window.scrollY / (range||1), 0, 1);
   if(prog>0){
-    wow.style.transform = `scale(${(1 + prog*1.8).toFixed(3)})`;
-    wow.style.opacity   = (1 - prog*1.15).toFixed(3);
-  } else {
-    wow.style.transform = "";   // CSS-Intro übernimmt
-    wow.style.opacity   = "";
+    // WICHTIG: Intro-Animationen abschalten, sonst überschreibt ihr fill-mode:both
+    // die inline gesetzten Werte (Zoom & Opacity passieren sonst nicht).
+    if(!introKilled){
+      wow.style.animation = "none"; slogan.style.animation = "none"; hint.style.animation = "none";
+      introKilled = true;
+    }
+    // Wachsen mit Ease-in (pow): das große Wachstum passiert gekoppelt mit dem
+    // Ausfaden — wenn das WoW richtig groß wird, ist es schon transparent,
+    // dadurch fällt das Hochskalieren über die native Auflösung nicht auf.
+    const grow  = 1 + Math.pow(prog, 1.6) * 3.0;                 // bis ~4×
+    const fade  = clamp((prog - FADE_START) / (FADE_END - FADE_START), 0, 1);
+    wow.style.transform = `scale(${grow.toFixed(3)})`;
+    wow.style.opacity   = (1 - fade).toFixed(3);
+    // Slogan & Scroll-Hint zügig ausblenden, sobald die Zoom-Show startet.
+    const hintOut = (1 - clamp(prog / 0.18, 0, 1)).toFixed(3);
+    slogan.style.opacity = hintOut;
+    hint.style.opacity   = hintOut;
+  } else if(introKilled){
+    // schon mal gescrollt → Script hat die Kontrolle, statischer Ruhezustand
+    wow.style.transform = "scale(1)";
+    wow.style.opacity   = "1";
+    slogan.style.opacity = "1";
+    hint.style.opacity   = ".9";
   }
 
-  // Scroll-Fortschritt unten
-  const max = document.documentElement.scrollHeight - vh;
-  spFill.style.setProperty("--sp", ((max>0?window.scrollY/max:0)*100).toFixed(1)+"%");
+  // Scroll-Fortschritt über die GANZE Seite (Hero + alle Karten) → durchgehende Führung.
+  const max   = document.documentElement.scrollHeight - vh;
+  const total = max>0 ? clamp(window.scrollY / max, 0, 1) : 0;
+  spFill.style.setProperty("--sp", (total*100).toFixed(1)+"%");
+  spFill.parentElement.style.setProperty("--sb-op", "1");        // immer sichtbar
 
   ticking=false;
 }
 addEventListener("scroll", onScroll, {passive:true});
 addEventListener("resize", onScroll);
+
+/* Karten-Snap läuft jetzt rein NATIV über CSS (scroll-snap, proximity) – kein
+   JS-Hijack mehr, damit es nativ & smooth bleibt (wie der Hero). */
+
 update();
 </script>
 </body>
