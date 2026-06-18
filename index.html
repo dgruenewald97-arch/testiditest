@@ -13,38 +13,40 @@
       url("assets/fonts/MMCBold.woff") format("woff"); }
 
 *{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ overflow-x:hidden; }
 body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
-.wow-module{ width:100%; }
 .wow-module sup{ font-size:.55em; vertical-align:super; }
 
-/* ============================================================
-   PHASE 1 — STATIK (keine Animation; die kommt in Phase 2)
-   ============================================================ */
+/* Durchgehender, nahtloser Farbverlauf über das ganze Modul */
+.wow-module{ width:100%;
+  background:linear-gradient(180deg,
+    #ff8a3a 0%, #ff6f6e 18%, #ff5a92 38%, #ff3fa6 58%, #e23bbf 78%, #b23be0 100%); }
 
-/* ---------- Step A: HERO (nur WoW, fullwidth) ---------- */
-.hero{ position:relative; width:100%; min-height:100vh; overflow:hidden;
-  display:flex; align-items:center; justify-content:center;
-  background:radial-gradient(120% 110% at 50% 12%,
-    #ff7a3c 0%, #ff5f7e 38%, #ff4fa0 64%, #f04fc6 100%); }
-.hero-logo{ position:absolute; top:26px; left:32px; width:clamp(82px,8vw,120px); z-index:3; }
-.hero-valid{ position:absolute; top:28px; right:32px; z-index:3; background:#e2001a;
-  color:#fff; font-weight:700; text-transform:uppercase; line-height:1.2;
-  padding:12px 16px; border-radius:8px; font-size:clamp(11px,1.2vw,15px); text-align:left; max-width:170px; }
-.hero-wow{ width:min(820px,80%); }
+/* ---------- HERO (nur WoW; gepinnt, scrubt beim Scrollen) ---------- */
+.hero{ position:relative; width:100%; height:135vh; }
+.hero-sticky{ position:sticky; top:0; height:100vh; display:flex;
+  align-items:center; justify-content:center; overflow:hidden; }
+.hero-wow{ width:min(460px,64%); will-change:transform,opacity;
+  animation:wow-intro 1.05s cubic-bezier(.18,1.35,.3,1) both; }
+@keyframes wow-intro{
+  0%{ transform:scale(0); opacity:0; }
+  55%{ transform:scale(1.12); opacity:1; }
+  72%{ transform:scale(.96); }
+  86%{ transform:scale(1.05); }
+  100%{ transform:scale(1); opacity:1; } }
 
-/* ---------- Step B: ANGEBOTSKARTE (Template) ---------- */
-.offer{ position:relative; width:100%; min-height:100vh; display:flex; align-items:center;
-  padding:8vh 0; background:linear-gradient(135deg, #ff4fa0 0%, #e0379b 55%, #b23bdf 100%); }
+/* ---------- ANGEBOTSKARTE (Template) ---------- */
+.offer{ position:relative; width:100%; min-height:100vh; display:flex; align-items:center; padding:8vh 0; }
 .offer .cap{ width:min(1240px,92%); margin:0 auto; display:grid;
   grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
-.offer.is-flip .visual{ order:-1; }                 /* Variante: Auto links */
+.offer.is-flip .visual{ order:-1; }
 
 .model{ font-family:"MMC"; font-weight:700; font-size:clamp(30px,4.4vw,56px); line-height:1; }
 .model-sub{ font-weight:700; font-size:clamp(16px,2vw,24px); margin-top:2px; opacity:.95; }
 .hl-title{ font-weight:700; margin:22px 0 8px; }
 .hl{ list-style:none; }
 .hl li{ position:relative; padding:4px 0 4px 20px; font-size:15px; opacity:.96; }
-.hl li::before{ content:"•"; position:absolute; left:2px; color:#fff; }
+.hl li::before{ content:"•"; position:absolute; left:2px; }
 
 .pricebox{ margin-top:22px; background:#fff; color:#15131c; border-radius:14px;
   padding:16px 20px; display:inline-block; box-shadow:0 18px 40px rgba(0,0,0,.25); }
@@ -60,20 +62,31 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 .cta b{ text-decoration:underline; }
 .legal{ margin-top:16px; font-size:11px; line-height:1.4; opacity:.8; max-width:560px; }
 
-/* Visual-Seite: „Jetzt ab" + Auto */
+/* Visual-Seite: „Jetzt ab" (näher an Vorlage) + Auto */
 .visual{ text-align:center; }
 .jetztab{ font-family:"MMC"; font-weight:700; font-style:italic; color:#fff;
-  font-size:clamp(40px,6vw,82px); line-height:.85; transform:skewX(-6deg); display:inline-block;
-  -webkit-text-stroke:3px #ff2d9b; paint-order:stroke fill;
-  text-shadow:4px 5px 0 rgba(196,0,110,.45); }
-.jetztab .rate{ font-size:1.25em; }
-.offer-car{ display:block; width:min(560px,100%); margin:6px auto 0;
+  transform:skewX(-7deg); display:inline-block; line-height:.86;
+  -webkit-text-stroke:2px #ff2d7a; paint-order:stroke fill;
+  text-shadow:3px 3px 0 #ff2d7a, 6px 7px 0 rgba(160,0,80,.5), 10px 12px 18px rgba(120,0,60,.35); }
+.jetztab .lead{ display:block; font-size:clamp(26px,3.6vw,48px); }
+.jetztab .rate{ display:block; font-size:clamp(64px,10vw,138px); margin-top:-.06em; }
+.jetztab .rate .eur{ font-size:.6em; }
+.offer-car{ display:block; width:min(560px,100%); margin:8px auto 0;
   filter:drop-shadow(0 26px 32px rgba(0,0,0,.3)); }
+
+/* ---------- Scroll-Fortschritt (kleiner weißer Strich, unten mittig) ---------- */
+.scrollbar{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:40;
+  width:130px; height:4px; border-radius:4px; background:rgba(255,255,255,.35); overflow:hidden; }
+.scrollbar .fill{ height:100%; width:var(--sp,0%); background:#fff; border-radius:4px;
+  transition:width .12s ease-out; }
 
 @media (max-width:820px){
   .offer .cap{ grid-template-columns:1fr; gap:26px; }
   .offer.is-flip .visual{ order:0; }
-  .hero-wow{ width:90%; }
+  .hero-wow{ width:78%; }
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-wow{ animation:none; }
 }
 </style>
 </head>
@@ -81,17 +94,16 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 
 <div class="wow-module">
 
-  <!-- ===== Step A: HERO – nur WoW (statisch) ===== -->
-  <section class="hero">
-    <img class="hero-logo" src="assets/logo-mitsubishi-black.svg" alt="Mitsubishi Motors">
-    <div class="hero-valid">WOW-Angebote gültig bis 31.12.2026</div>
-    <img class="hero-wow" src="assets/header/wow.png" alt="WOW">
+  <!-- HERO – nur WoW, gepinnt -->
+  <section class="hero" id="hero">
+    <div class="hero-sticky">
+      <img class="hero-wow" id="heroWow" src="assets/header/wow.png" alt="WOW">
+    </div>
   </section>
 
-  <!-- ===== Step B: ANGEBOTSKARTE Template (Outlander) ===== -->
+  <!-- ANGEBOTSKARTE Template (Outlander) -->
   <section class="offer">
     <div class="cap">
-      <!-- Text-Seite -->
       <div class="text">
         <h2 class="model">Outlander</h2>
         <p class="model-sub">Der souveräne Plug-in Hybrid-SUV</p>
@@ -111,17 +123,51 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
         <a class="cta" href="#anfrage-outlander"><b>Outlander Angebot</b> anfordern</a>
         <p class="legal">Outlander Plug-in Hybrid Diamant 4WD<sup>x</sup>: Energieverbrauch 16 kWh/100 km Strom &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B; gewichtet kombinierte Werte.**</p>
       </div>
-
-      <!-- Visual-Seite: Jetzt ab + Auto -->
       <div class="visual">
-        <div class="jetztab">Jetzt ab<br><span class="rate">189</span> €<sup>x</sup></div>
+        <div class="jetztab"><span class="lead">Jetzt ab</span><span class="rate">189 <span class="eur">€</span><sup>x</sup></span></div>
         <img class="offer-car" src="assets/cars/outlander.png" alt="Mitsubishi Outlander Diamant">
       </div>
     </div>
   </section>
 
-  <!-- Step C: weitere Modelle (ASX, Grandis, Eclipse Cross, Outlander Black, L200) folgen -->
-
+  <!-- weitere Modelle folgen -->
 </div>
+
+<!-- Scroll-Fortschritt -->
+<div class="scrollbar"><div class="fill" id="spFill"></div></div>
+
+<script>
+/* Reine JS-Animation, keine Abhängigkeit. Scroll-positionsgesteuert. */
+const heroEl = document.getElementById("hero");
+const wow    = document.getElementById("heroWow");
+const spFill = document.getElementById("spFill");
+const clamp  = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+let ticking=false;
+function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(update); } }
+function update(){
+  const vh = innerHeight;
+
+  // HERO: WoW wächst & fadet beim Scrollen (gepinnt). Intro läuft bei prog=0.
+  const range = heroEl.offsetHeight - vh;          // scrollbarer Bereich des Hero
+  const prog  = clamp(window.scrollY / (range||1), 0, 1);
+  if(prog>0){
+    wow.style.transform = `scale(${(1 + prog*1.8).toFixed(3)})`;
+    wow.style.opacity   = (1 - prog*1.15).toFixed(3);
+  } else {
+    wow.style.transform = "";   // CSS-Intro übernimmt
+    wow.style.opacity   = "";
+  }
+
+  // Scroll-Fortschritt unten
+  const max = document.documentElement.scrollHeight - vh;
+  spFill.style.setProperty("--sp", ((max>0?window.scrollY/max:0)*100).toFixed(1)+"%");
+
+  ticking=false;
+}
+addEventListener("scroll", onScroll, {passive:true});
+addEventListener("resize", onScroll);
+update();
+</script>
 </body>
 </html>
