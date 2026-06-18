@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mitsubishi WOW – Kampagne (Aufbau)</title>
+<style>
+/* ===== Mitsubishi Markenschrift (MMC) ===== */
+@font-face{ font-family:"MMC"; font-weight:400; font-display:swap;
+  src:url("assets/fonts/MMCRegular.woff") format("woff"); }
+@font-face{ font-family:"MMC"; font-weight:700; font-display:swap;
+  src:url("assets/fonts/MMCBold.woff2") format("woff2"),
+      url("assets/fonts/MMCBold.woff") format("woff"); }
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+html,body{ overflow-x:clip; }  /* clip statt hidden: kein Scroll-Container → position:sticky bleibt heil */
+body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
+
+/* Accessibility: Disable smooth scrolling for users preferring reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+.wow-module sup{ font-size:.55em; vertical-align:super; }
+
+/* Durchgehender, nahtloser Farbverlauf über das ganze Modul - Übergang nach Blau unten */
+.wow-module{ width:100%; position:relative;
+  background:linear-gradient(180deg,
+    #ff8a3a 0%,
+    #ff6f6e 12%,
+    #ff5a92 24%,
+    #ff3fa6 38%,
+    #e23bbf 52%,
+    #b23be0 68%,
+    #6366f1 82%,
+    #1d4ed8 100%);
+}
+
+/* ---------- HERO (nur WoW; gepinnt, scrubt beim Scrollen) ---------- */
+.hero{ position:relative; width:100%; height:240vh; z-index:2; }
+.hero-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; overflow:hidden; }
+.hero-wow{ width:min(460px,64%); will-change:transform,opacity; transform-origin:center center;
+  animation:wow-intro 1.05s cubic-bezier(.18,1.35,.3,1) both; }
+
+.hero-slogan{ margin-top:3.4vh; font-weight:700; font-style:italic;
+  font-size:clamp(20px,3.2vw,40px); color:#fff; text-align:center; letter-spacing:.01em;
+  text-shadow:0 4px 20px rgba(150,0,70,.4);
+  opacity:0; transform:translateY(14px);
+  animation:slogan-in .7s cubic-bezier(.2,.9,.25,1) 1.0s both; }
+@keyframes slogan-in{ to{ opacity:1; transform:translateY(0); } }
+
+.scroll-hint{ position:absolute; bottom:7vh; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:7px; white-space:nowrap;
+  color:#fff; font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  opacity:0; animation:hint-in .7s ease 1.35s both; pointer-events:none; }
+.scroll-hint .arrow{ font-size:22px; line-height:1; animation:hint-bounce 1.6s ease-in-out infinite; }
+@keyframes hint-in{ to{ opacity:.9; } }
+@keyframes hint-bounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(8px); } }
+@keyframes wow-intro{
+  0%{ transform:scale(0); opacity:0; }
+  55%{ transform:scale(1.12); opacity:1; }
+  72%{ transform:scale(.96); }
+  86%{ transform:scale(1.05); }
+  100%{ transform:scale(1); opacity:1; } }
+
+/* ---------- ANGEBOTSKARTE ---------- */
+.offer{ position:relative; width:100%; min-height:100vh; display:flex; align-items:center;
+  padding:6vh 0; z-index:2; }
+.offer .cap{ width:min(1240px,94%); margin:0 auto; display:grid;
+  grid-template-columns:1.05fr 1.15fr;
+  grid-template-areas: "info car";
+  gap:clamp(30px,4.5vw,70px); align-items:center; }
+
+/* INFO-Spalte (links) - Always left to maintain anchored eye target */
+.col-info{ grid-area: info; display:flex; flex-direction:column; align-items:flex-start; gap:clamp(12px,2vh,24px); min-width:0; }
+.kicker {
+  font-weight: 700;
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.15;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45), 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+.kicker-sub {
+  display: block;
+  font-weight: 700;
+  font-size: clamp(13px, 1.4vw, 17px);
+  opacity: 1;
+  margin-top: 4px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* AUTO-Spalte (rechts) - Always right for symmetry & inward direction */
+.col-car{ grid-area: car; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; }
+.foerderung {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-align: center;
+  font-size: clamp(13px, 1.5vw, 19px);
+  margin-top: 15px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- HIGHLIGHTS & BULLETS ---------- */
+.hl {
+  list-style: none;
+  margin-bottom: clamp(10px, 1.5vh, 20px);
+}
+.hl li {
+  position: relative;
+  padding: 3px 0 3px 22px;
+  font-size: clamp(13.5px, 1.7vh, 16px);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.45;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+.hl li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- PRICEBOX & CTA ---------- */
+.buy {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 1.6vw, 24px);
+  flex-wrap: wrap;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.pricebox {
+  color: #15131c;
+  border-radius: 18px;
+  padding: clamp(14px, 1.8vh, 18px) clamp(18px, 2.2vh, 22px);
+  display: inline-block;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+  border: 7px solid transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, var(--accent-a,#ff8a3a), var(--accent-b,#ff3fa6) 55%, var(--accent-c,#b23be0)) border-box;
+}
+.pricebox .row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 4px 0;
+}
+.pricebox .op {
+  font-family: "MMC";
+  font-weight: 700;
+  font-size: 20px;
+  width: 18px;
+}
+.pricebox .val {
+  font-family: "MMC";
+  font-weight: 700;
+  font-size: clamp(18px, 2.2vw, 24px);
+}
+.pricebox .lbl {
+  font-size: 11px;
+  color: #666;
+  text-align: right;
+  line-height: 1.1;
+  align-self: center;
+}
+.pricebox .total {
+  border-top: 2px solid #eee;
+  margin-top: 4px;
+  padding-top: 8px;
+}
+.pricebox .total .val {
+  color: #e2001a;
+  font-size: clamp(20px, 2.4vw, 26px);
+}/* Preis 1:1 zur Vorlage: reines WEISS, fett, leicht kursiv (skew), weicher Schatten */
+.jetztab {
+  font-family: "MMC", sans-serif;
+  font-weight: 700;
+  color: #fff;
+  transform: skewX(-8deg);
+  display: inline-block;
+  line-height: 0.82;
+  text-align: left;
+  text-shadow: 2px 3px 0 rgba(150, 20, 95, 0.20), 0 14px 30px rgba(120, 0, 60, 0.38);
+}
+.jetztab .lead {
+  display: block;
+  font-size: clamp(24px, 3.4vh, 48px);
+}
+.jetztab .rate {
+  display: block;
+  font-size: clamp(54px, 9vh, 116px);
+  margin-top: -0.04em;
+}
+.jetztab .rate .eur {
+  font-size: 0.62em;
+}
+.jetztab .rate sup {
+  font-size: 0.32em;
+}
+.jetztab .ohne {
+  display: block;
+  font-size: clamp(15px, 2.1vh, 26px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 0.1em;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #15131c;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 14px 26px;
+  border-radius: 12px;
+  font-size: clamp(13px, 1.5vh, 15px);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.cta::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: ctaShine 4.5s ease-in-out infinite;
+}
+@keyframes ctaShine {
+  0% { left: -150%; }
+  15% { left: 150%; }
+  100% { left: 150%; }
+}
+.cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  filter: brightness(1.1);
+}
+.cta:active {
+  transform: translateY(0);
+}
+.cta b { text-decoration: underline; }
+.legal {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 1;
+  max-width: 560px;
+  text-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.9);
+}
+
+/* Wallbox-Badge: „+" + Kreis mit SVG-Grafik */
+.wallbox { position: absolute; top: -20px; right: -20px; z-index: 2; display: flex; align-items: center; gap: 6px; }
+.wb-plus { font-family: "MMC"; font-weight: 700; color: #fff; line-height: 1;
+  font-size: clamp(30px, 3.5vw, 50px); text-shadow: 0 8px 18px rgba(120,0,60,.3); }
+.wb-circle { position: relative; width: clamp(136px, 15vw, 176px); aspect-ratio: 1;
+  border-radius: 50%; background: rgba(255, 255, 255, 0.15); border: 1.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+.wb-circle .wb-img { position: absolute; left: 50%; top: 56%; transform: translate(-50%,-50%);
+  width: 44%; height: auto; filter: drop-shadow(0 10px 16px rgba(0,0,0,.15)); }
+.wb-arc { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.wb-arc text { fill: #fff; font-family: "MMC"; font-weight: 700; font-size: 12.5px; }
+
+/* Car Wrapper */
+.car-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: min(720px, 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  will-change: transform;
+}
+
+.offer-car { display: block; width: 100%; max-width: min(720px, 100%); max-height: 58vh; object-fit: contain;
+  filter: drop-shadow(0 25px 45px rgba(0,0,0,.25)); transition: filter 0.3s ease; }
+.car-black-tint {
+  filter: brightness(0.52) contrast(1.04) saturate(0.65) drop-shadow(0 25px 45px rgba(0,0,0,0.3));
+}
+
+/* 8-Jahre-Garantie-Siegel (Clean Corporate White Circle) */
+.warranty-badge {
+  position: absolute;
+  bottom: 6%;
+  left: -20px;
+  width: clamp(72px, 8.2vw, 94px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  color: #15131c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+  z-index: 6;
+  font-family: "MMC", sans-serif;
+  line-height: 1;
+  text-align: center;
+  opacity: 0;
+}
+.warranty-badge .bis-zu {
+  font-size: clamp(6px, 0.65vw, 8px);
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.65;
+  letter-spacing: 0.02em;
+}
+.warranty-badge .num {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 700;
+  color: #e2001a;
+  margin: -1px 0 -3px;
+  line-height: 0.95;
+}
+.warranty-badge .jahre {
+  font-size: clamp(8px, 0.9vw, 11px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.warranty-badge .line {
+  width: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.15);
+  margin: 4px 0 3px;
+}
+.warranty-badge .paket {
+  font-size: clamp(5px, 0.6vw, 7px);
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.7;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Scroll-Fortschritt ---------- */
+.scrollbar { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 40;
+  width: 130px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.2); overflow: hidden;
+  opacity: var(--sb-op,1); transition: opacity .4s ease; backdrop-filter: blur(4px); }
+.scrollbar .fill { height: 100%; width: 100%; transform: scaleX(var(--sp,0)); transform-origin: left; background: #fff; border-radius: 4px; }
+
+/* ---------- Scroll Reveals ---------- */
+.offer .col-info > *,
+.offer .offer-car,
+.offer .wallbox,
+.offer .foerderung,
+.offer .warranty-badge {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Slide vehicle in with simple zoom to prevent horizontal restlessness */
+.offer .offer-car { transform: scale(0.98); opacity: 0; transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+
+/* Active entrance animation values */
+.offer.is-visible .col-info > * { opacity: 1; transform: translateY(0); }
+.offer.is-visible .col-info > *:nth-child(1) { transition-delay: 0.08s; } /* Kicker */
+.offer.is-visible .col-info > *:nth-child(2) { transition-delay: 0.16s; } /* jetztab */
+.offer.is-visible .col-info > *:nth-child(3) { transition-delay: 0.24s; } /* hl */
+.offer.is-visible .col-info > *:nth-child(4) { transition-delay: 0.32s; } /* buy */
+.offer.is-visible .col-info > *:nth-child(5) { transition-delay: 0.40s; } /* legal */
+
+.offer.is-visible .offer-car {
+  opacity: 1;
+  transform: scale(1);
+  transition-delay: 0.12s;
+  transition-duration: 0.85s;
+}
+.offer.is-visible .wallbox { opacity: 1; transform: translateY(0); transition-delay: 0.28s; }
+.offer.is-visible .foerderung { opacity: 1; transform: translateY(0); transition-delay: 0.36s; }
+.offer.is-visible .warranty-badge { opacity: 1; transform: translateY(0); transition-delay: 0.32s; }
+
+/* ---------- CINEMATIC OUTRO (scroll-pinned) ---------- */
+.outro-scroll-container {
+  position: relative;
+  height: 300vh;          /* scroll distance = 2× viewport height */
+  z-index: 2;
+}
+.outro {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: #09080d;    /* JS writes the gradient dynamically */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.outro-inner {
+  width: min(900px, 90%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 4vh, 48px);
+  text-align: center;
+}
+.outro-headline {
+  font-family: "MMC", sans-serif;
+  font-weight: 700;
+  font-size: clamp(38px, 7vw, 88px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 4px 32px rgba(0,0,0,0.45);
+}
+.outro-headline .char {
+  display: inline-block;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+.outro-headline .char.space { width: 0.28em; }
+.outro-sub {
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: 400;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.55;
+  max-width: 560px;
+  opacity: 0;
+  will-change: opacity;
+}
+.outro-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #09080d;
+  text-decoration: none;
+  font-family: "MMC", sans-serif;
+  font-weight: 700;
+  font-size: clamp(14px, 1.6vw, 17px);
+  padding: clamp(14px,2vh,18px) clamp(28px,3.5vw,44px);
+  border-radius: 100px;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  will-change: opacity;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.32);
+  transition: box-shadow 0.3s ease, filter 0.3s ease;
+}
+.outro-cta:hover {
+  box-shadow: 0 18px 48px rgba(0,0,0,0.45);
+  filter: brightness(0.93);
+}
+.outro-cta svg { flex-shrink: 0; }
+
+.quiz-card {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  background: #fff;
+  color: #15131c;
+  border-radius: 24px;
+  padding: clamp(24px, 4.5vh, 48px);
+  box-shadow: 0 18px 44px rgba(120, 0, 60, 0.18);
+  border: 7px solid transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(90deg, #ff8a3a, #ff3fa6, #b23be0) border-box;
+  position: relative;
+  overflow: hidden;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.quiz-step {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  animation: stepFade 0.4s ease-out forwards;
+}
+.quiz-step.active {
+  display: flex;
+}
+@keyframes stepFade {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.quiz-progress-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8a3a, #ff3fa6);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.quiz-step-indicator {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ff3fa6;
+  margin-bottom: 6px;
+}
+
+.quiz-title {
+  font-family: "MMC", sans-serif;
+  font-size: clamp(24px, 3.5vw, 42px);
+  font-weight: 700;
+  text-align: center;
+  color: #15131c;
+  margin-bottom: 16px;
+}
+.quiz-question {
+  font-family: "MMC", sans-serif;
+  font-size: clamp(20px, 2.6vw, 32px);
+  font-weight: 700;
+  color: #15131c;
+  margin-bottom: 24px;
+}
+.quiz-intro-text {
+  font-size: clamp(14px, 1.8vw, 17px);
+  color: #555;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 580px;
+  margin: 0 auto 30px;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-option-card {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  color: #15131c;
+  width: 100%;
+}
+.quiz-option-card:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+.quiz-option-card:active {
+  transform: translateY(0);
+}
+.quiz-option-card .icon {
+  font-size: clamp(24px, 3.2vw, 32px);
+  flex-shrink: 0;
+}
+.quiz-option-card .txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.quiz-option-card strong {
+  font-size: 15px;
+  font-family: "MMC", sans-serif;
+}
+.quiz-option-card span {
+  font-size: 12.5px;
+  color: #555;
+  line-height: 1.3;
+}
+
+.quiz-action-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.quiz-btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #ff8a3a, #ff3fa6);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  padding: 16px 32px;
+  border-radius: 14px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(255, 63, 166, 0.28);
+}
+.quiz-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(255, 63, 166, 0.4);
+  filter: brightness(1.08);
+}
+
+/* Loading state */
+.quiz-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 0;
+}
+.quiz-loader .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 0, 0, 0.08);
+  border-top-color: #ff3fa6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px rgba(255, 63, 166, 0.1);
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.quiz-loader p {
+  font-size: 15px;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.02em;
+}
+
+/* Result screen */
+.result-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .result-layout {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+
+.result-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+}
+@media (min-width: 768px) {
+  .result-visual {
+    min-height: 260px;
+  }
+}
+.result-car-img {
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.18));
+  z-index: 2;
+  animation: carReveal 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes carReveal {
+  from { transform: scale(0.9) translateX(30px); opacity: 0; }
+  to { transform: scale(1) translateX(0); opacity: 1; }
+}
+.result-glow {
+  position: absolute;
+  width: 90%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(255, 63, 166, 0.15) 0%, transparent 68%);
+  z-index: 1;
+  filter: blur(20px);
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+.result-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff3fa6;
+}
+.result-title {
+  font-family: "MMC", sans-serif;
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 700;
+  color: #15131c;
+  line-height: 1.15;
+  margin-top: -6px;
+}
+.result-description {
+  font-size: 13.5px;
+  color: #555;
+  line-height: 1.45;
+}
+
+.result-deal-box {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.deal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.deal-item .lbl {
+  color: #666;
+}
+.deal-item .val {
+  font-weight: 700;
+  color: #15131c;
+  font-size: 14.5px;
+}
+.deal-item:first-child .val {
+  color: #ff8a3a;
+  font-size: 17px;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.result-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-grow: 1;
+  background: linear-gradient(90deg, #ff8a3a, #ff3fa6);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 18px rgba(255, 63, 166, 0.2);
+}
+.result-cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(255, 63, 166, 0.35);
+  filter: brightness(1.08);
+}
+.result-restart-btn {
+  background: transparent;
+  color: #555;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.result-restart-btn:hover {
+  border-color: rgba(0,0,0,0.4);
+  color: #15131c;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+
+/* Closing section entrance reveal - no transform on wrapper to avoid backdrop-filter jank */
+.offer-closing .closing-content-wrap {
+  opacity: 0;
+  transition: opacity 0.6s ease-out;
+  will-change: opacity;
+}
+.offer-closing.is-visible .closing-content-wrap {
+  opacity: 1;
+}
+.offer-closing .closing-title-interactive {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.offer-closing.is-visible .closing-title-interactive {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+/* ---------- FOOTER ---------- */
+.footer-legal {
+  position: relative;
+  background: #09080d;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8vh 0 4vh;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden; /* to crop the giant logo */
+  z-index: 2;
+}
+.footer-cap {
+  width: min(1200px, 94%);
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+}
+.footer-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+.footer-logo {
+  height: clamp(25px, 3.5vw, 38px);
+  width: auto;
+}
+.footer-tagline {
+  font-family: "MMC";
+  font-weight: 700;
+  color: #fff;
+  font-size: clamp(14px, 1.5vw, 18px);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.footer-grid h4 {
+  font-family: "MMC";
+  font-weight: 700;
+  color: #fff;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+.footer-grid p {
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.footer-emissions {
+  font-size: 12px;
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 24px;
+  margin-bottom: 30px;
+}
+.footer-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+.footer-meta a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+}
+.footer-meta a:hover {
+  text-decoration: underline;
+}
+.footer-bg-logo {
+  position: absolute;
+  bottom: -320px; /* cuts off 3/4 of it */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 580px;
+  height: 500px;
+  background: url("assets/logo-mitsubishi.svg") no-repeat center bottom;
+  background-size: contain;
+  opacity: 0.12; /* subtle watermark */
+  pointer-events: none;
+  z-index: 1;
+  filter: brightness(0) invert(1); /* white silhouette */
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 80%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 80%);
+}
+
+@media (max-width:820px){
+  .offer{ min-height:auto; padding:6vh 0; }
+  .offer .cap{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "car"
+      "info";
+    gap:24px;
+  }
+  .offer-car{ max-height:42vh; }
+  .hero-wow{ width:78%; }
+  
+  .specs-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .wallbox {
+    top: -10px;
+    right: 0px;
+  }
+  .warranty-badge {
+    bottom: 0px;
+    left: 0px;
+  }
+  
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-meta { flex-direction: column; align-items: flex-start; }
+  .footer-meta a { margin-left: 0; margin-right: 12px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-wow{ animation:none; }
+  .hero-slogan{ animation:none; opacity:1; transform:none; }
+  .scroll-hint{ animation:none; opacity:.9; }
+  .scroll-hint .arrow{ animation:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="wow-module">
+
+  <!-- HERO – nur WoW, gepinnt -->
+  <section class="hero" id="hero">
+    <div class="hero-sticky">
+      <img class="hero-wow" id="heroWow" src="assets/header/wow.png" alt="WOW">
+      <p class="hero-slogan" id="heroSlogan">Jetzt wird&rsquo;s gro&szlig;.</p>
+      <div class="scroll-hint" id="scrollHint">
+        <span>Runterscrollen &amp; staunen</span>
+        <span class="arrow" aria-hidden="true">&darr;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Outlander Diamant -->
+  <section class="offer" style="--accent-a:#ff8a3a; --accent-b:#ff3fa6; --accent-c:#b23be0;">
+    <div class="cap">
+      <!-- INFO links -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Outlander Diamant<span class="kicker-sub">Monatlich leasen · Der souveräne Plug-in Hybrid-SUV</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate"><span class="price-val" data-target="189">0</span> <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>12.3" Google Infotainment · Super All Wheel Control</li>
+          <li>Yamaha Premium Sound · Standheizung &amp; App</li>
+          <li>360°-Kamera &amp; LED · 2-Zonen Klimaautomatik</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="https://www.mitsubishi-motors.de/modelle/outlander-phev" target="_blank" rel="noopener noreferrer">
+            <span><b>Outlander Angebot</b> anfordern</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <p class="legal">Outlander Plug-in Hybrid Diamant 4WD<sup>x</sup>: Energieverbrauch 16 kWh/100 km Strom &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B; gewichtet kombinierte Werte. Unverbindliche Preisempfehlung 49.990 € abzüglich 10.000 € empfohlener Aktionsrabatt und 4.500 € staatlicher Förderung* ergibt einen rechnerischer Aufwand von ab 35.490 €.**</p>
+      </div>
+      <!-- AUTO rechts -->
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-outlander" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-outlander" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox">
+          </div>
+        </div>
+        <div class="car-wrapper">
+          <img class="offer-car" src="assets/cars/outlander.png" alt="Mitsubishi Outlander Diamant">
+          <div class="warranty-badge">
+            <span class="bis-zu">Bis zu</span>
+            <span class="num">8</span>
+            <span class="jahre">Jahre</span>
+            <div class="line"></div>
+            <span class="paket">Garantie Paket***</span>
+          </div>
+        </div>
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Outlander Black -->
+  <section class="offer" style="--accent-a:#ff3fa6; --accent-b:#b23be0; --accent-c:#6c2bd9;">
+    <div class="cap">
+      <!-- INFO links -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Outlander Black<span class="kicker-sub">Monatlich leasen · Die dunkle Sonderedition</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate"><span class="price-val" data-target="219">0</span> <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>Schwarze Design-Akzente · Dunkle 20" Leichtmetallräder</li>
+          <li>12.3" Google Infotainment · Super All Wheel Control</li>
+          <li>Yamaha Premium Sound · 360°-Kamera &amp; LED</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="https://www.mitsubishi-motors.de/modelle/outlander-phev" target="_blank" rel="noopener noreferrer">
+            <span><b>Outlander Black</b> anfordern</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <p class="legal">Outlander Black Plug-in Hybrid 4WD<sup>x</sup>: Energieverbrauch 16 kWh/100 km Strom &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B; gewichtet kombinierte Werte. Preis &amp; Werte vorläufig. Unverbindliche Preisempfehlung 54.990 € abzüglich 10.000 € empfohlener Aktionsrabatt und 4.500 € staatlicher Förderung* ergibt einen rechnerischen Aufwand von ab 40.490 €.**</p>
+      </div>
+      <!-- AUTO rechts -->
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-black" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-black" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox">
+          </div>
+        </div>
+        <div class="car-wrapper">
+          <img class="offer-car car-black-tint" src="assets/cars/outlander.png" alt="Mitsubishi Outlander Black">
+          <div class="warranty-badge">
+            <span class="bis-zu">Bis zu</span>
+            <span class="num">8</span>
+            <span class="jahre">Jahre</span>
+            <div class="line"></div>
+            <span class="paket">Garantie Paket***</span>
+          </div>
+        </div>
+        <p class="foerderung">Bis zu <b>4.500 €</b> staatliche Förderung möglich!*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE ASX Diamant -->
+  <section class="offer" style="--accent-a:#ff8a3a; --accent-b:#ff6f6e; --accent-c:#ff3fa6;">
+    <div class="cap">
+      <!-- INFO links -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot ASX Diamant<span class="kicker-sub">Monatlich leasen · Der kompakte Allrounder</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate"><span class="price-val" data-target="159">0</span> <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>LED-Scheinwerfer · Apple CarPlay &amp; Android Auto</li>
+          <li>Rückfahrkamera &amp; Tempomat · Klimaautomatik</li>
+          <li>Mild-Hybrid Antrieb · 18" Leichtmetallräder</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="https://www.mitsubishi-motors.de/modelle/asx" target="_blank" rel="noopener noreferrer">
+            <span><b>ASX Angebot</b> anfordern</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <p class="legal">ASX Diamant<sup>x</sup>: Verbrauchs- &amp; Emissionswerte nach WLTP; werden noch ergänzt. Preis &amp; Werte vorläufig. Unverbindliche Preisempfehlung 32.990 € abzüglich 6.000 € empfohlener Aktionsrabatt ergibt einen rechnerischer Aufwand von ab 26.990 €.**</p>
+      </div>
+      <!-- AUTO rechts -->
+      <div class="col-car">
+        <div class="car-wrapper">
+          <img class="offer-car" src="assets/cars/asx.png" alt="Mitsubishi ASX Diamant">
+          <div class="warranty-badge">
+            <span class="bis-zu">Bis zu</span>
+            <span class="num">8</span>
+            <span class="jahre">Jahre</span>
+            <div class="line"></div>
+            <span class="paket">Garantie Paket***</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Grandis Diamant -->
+  <section class="offer" style="--accent-a:#ff5a92; --accent-b:#ff3fa6; --accent-c:#b23be0;">
+    <div class="cap">
+      <!-- INFO links -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Grandis Diamant<span class="kicker-sub">Monatlich leasen · Der geräumige Familien-SUV</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate"><span class="price-val" data-target="199">0</span> <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>Großzügiger 7-Sitzer · Panorama-Glasdach</li>
+          <li>360°-Kamera &amp; LED · 12.3" Infotainment-Display</li>
+          <li>Voll-Hybrid System · Adaptiver Tempomat</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="https://www.mitsubishi-motors.de/" target="_blank" rel="noopener noreferrer">
+            <span><b>Grandis Angebot</b> anfordern</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <p class="legal">Grandis Diamant<sup>x</sup>: Verbrauchs- &amp; Emissionswerte nach WLTP; werden noch ergänzt. Preis &amp; Werte vorläufig. Unverbindliche Preisempfehlung 44.990 € abzüglich 8.000 € empfohlener Aktionsrabatt ergibt einen rechnerischer Aufwand von ab 36.990 €.**</p>
+      </div>
+      <!-- AUTO rechts -->
+      <div class="col-car">
+        <div class="car-wrapper">
+          <img class="offer-car" src="assets/cars/grandis.png" alt="Mitsubishi Grandis Diamant">
+          <div class="warranty-badge">
+            <span class="bis-zu">Bis zu</span>
+            <span class="num">8</span>
+            <span class="jahre">Jahre</span>
+            <div class="line"></div>
+            <span class="paket">Garantie Paket***</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE Eclipse Cross -->
+  <section class="offer" style="--accent-a:#ff6f6e; --accent-b:#ff3fa6; --accent-c:#e23bbf;">
+    <div class="cap">
+      <!-- INFO links -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot Eclipse Cross<span class="kicker-sub">Monatlich leasen · Das Plug-in-Hybrid-Coupé-SUV</span></p>
+        <div class="jetztab">
+          <span class="lead">Jetzt ab</span>
+          <span class="rate"><span class="price-val" data-target="179">0</span> <span class="eur">€</span><sup>x</sup></span>
+          <span class="ohne">Ohne Anzahlung</span>
+        </div>
+        <ul class="hl">
+          <li>Plug-in Hybrid System · Super All Wheel Control</li>
+          <li>LED-Matrix Scheinwerfer · Head-up-Display</li>
+          <li>360°-Kamera &amp; Parkhilfe · 18" Leichtmetallräder</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="https://www.mitsubishi-motors.de/modelle/eclipse-cross-phev" target="_blank" rel="noopener noreferrer">
+            <span><b>Eclipse Cross Angebot</b> anfordern</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <p class="legal">Eclipse Cross Plug-in Hybrid<sup>x</sup>: Verbrauchs- &amp; Emissionswerte nach WLTP; werden noch ergänzt. Preis &amp; Werte vorläufig. Unverbindliche Preisempfehlung 39.990 € abzüglich 7.000 € empfohlener Aktionsrabatt und 6.000 € staatlicher Förderung* ergibt einen rechnerischer Aufwand von ab 26.990 €.**</p>
+      </div>
+      <!-- AUTO rechts -->
+      <div class="col-car">
+        <div class="wallbox">
+          <span class="wb-plus">+</span>
+          <div class="wb-circle">
+            <svg class="wb-arc" viewBox="0 0 200 200" aria-hidden="true">
+              <path id="wbArc-eclipse" d="M 22,108 A 80,80 0 0 1 178,108" fill="none"/>
+              <text text-anchor="middle"><textPath href="#wbArc-eclipse" startOffset="50%">Gratis Wallbox im Wert von 599&nbsp;€</textPath></text>
+            </svg>
+            <img class="wb-img" src="assets/placeholders/wallbox.svg" alt="Gratis Wallbox">
+          </div>
+        </div>
+        <div class="car-wrapper">
+          <img class="offer-car" src="assets/cars/eclipse-cross.png" alt="Mitsubishi Eclipse Cross">
+          <div class="warranty-badge">
+            <span class="bis-zu">Bis zu</span>
+            <span class="num">8</span>
+            <span class="jahre">Jahre</span>
+            <div class="line"></div>
+            <span class="paket">Garantie Paket***</span>
+          </div>
+        </div>
+        <p class="foerderung">Bis zu <b>6.000 €</b> staatliche Förderung möglich!*</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGEBOTSKARTE L200 (Coming Soon) -->
+  <section class="offer" style="--accent-a:#b23be0; --accent-b:#e23bbf; --accent-c:#ff3fa6;">
+    <div class="cap">
+      <!-- INFO links -->
+      <div class="col-info">
+        <p class="kicker">WOW-Angebot L200<span class="kicker-sub">Der neue Pickup · Bald verfügbar</span></p>
+        <div class="jetztab">
+          <span class="lead">Der neue</span>
+          <span class="rate">L200<sup></sup></span>
+          <span class="ohne">Coming Soon</span>
+        </div>
+        <ul class="hl">
+          <li>Robuste Konstruktion · Hohe Anhänge- &amp; Nutzlast</li>
+          <li>Allradantrieb Super Select 4WD · Moderne Fahrassistenten</li>
+          <li>Premium-Komfortkabine · Aktionsdetails folgen bald</li>
+        </ul>
+        <div class="buy">
+          <a class="cta" href="https://www.mitsubishi-motors.de/modelle/l200" target="_blank" rel="noopener noreferrer">
+            <span>Jetzt vormerken</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <p class="legal">Abbildung zeigt mögliche Sonderausstattung. Markteinführung, Preise &amp; Aktionsdetails werden noch bekannt gegeben. (Platzhalter)</p>
+      </div>
+      <!-- AUTO rechts -->
+      <div class="col-car">
+        <div class="car-wrapper">
+          <img class="offer-car" src="assets/cars/l200.png" alt="Mitsubishi L200 (Coming Soon)">
+          <div class="warranty-badge">
+            <span class="bis-zu">Bis zu</span>
+            <span class="num">8</span>
+            <span class="jahre">Jahre</span>
+            <div class="line"></div>
+            <span class="paket">Garantie Paket***</span>
+          </div>
+        </div>
+        <p class="foerderung">Bald verfügbar · jetzt vormerken</p>
+      </div>
+    </div>
+  </section>
+</div> <!-- Close .wow-module -->
+
+  <!-- CINEMATIC OUTRO (scroll-pinned, 300vh scroll container) -->
+  <div class="outro-scroll-container" id="outro-scroll">
+    <section class="outro" id="outro">
+      <div class="outro-inner">
+        <h2 class="outro-headline" id="outro-headline">Jetzt ist Ihr WOW-Moment.</h2>
+        <p class="outro-sub" id="outro-sub">Entdecken Sie alle Mitsubishi-Modelle und finden Sie das Angebot, das zu Ihrem Leben passt. Wir freuen uns auf Sie.</p>
+        <a class="outro-cta" id="outro-cta" href="https://www.mitsubishi-motors.de" target="_blank" rel="noopener noreferrer">
+          <span>Zur Mitsubishi Website</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Legal Footer -->
+  <footer class="footer-legal">
+    <div class="footer-bg-logo"></div>
+    <div class="footer-cap">
+      <div class="footer-logo-row">
+        <img class="footer-logo" src="assets/logo-mitsubishi.svg" alt="Mitsubishi Motors Logo">
+        <span class="footer-tagline">WOW Angebote 2026</span>
+      </div>
+      
+      <div class="footer-grid">
+        <div>
+          <h4>Kampagnen-Konditionen</h4>
+          <p>Alle Angebote sind freibleibend und gültig für Kaufverträge und Leasinganfragen bis zum <strong>31.12.2026</strong> bei teilnehmenden Mitsubishi-Händlern in Deutschland. Nur solange der Vorrat reicht.<sup>x</sup></p>
+        </div>
+        <div>
+          <h4>Rechtliches &amp; Bank</h4>
+          <p><sup>x</sup> Ein freibleibendes Leasingangebot der MKG Bank, Zweigniederlassung der MCE Bank GmbH, Schieferstein 9, 65439 Flörsheim. Bonität vorausgesetzt. Unverbindliche Leasingbeispiele basieren auf 24 Monaten Laufzeit, 0,00 € Sonderzahlung und 10.000 km Laufleistung p.a. Zzgl. Überführungskosten.<br><br>
+          * Der staatliche Förderanteil (staatliche Förderung) unterliegt den Richtlinien der staatlichen Stellen und erfordert eine separate Antragstellung beim BAFA durch den Kunden. Ein Rechtsanspruch auf Bewilligung besteht nicht.</p>
+        </div>
+        <div>
+          <h4>Herstellergarantie</h4>
+          <p>*** 5 Jahre Herstellergarantie + 3 Jahre kostenlose Anschlussgarantie der MMD Automobile GmbH (bis 160.000 km Gesamtlaufleistung), gemäß den Garantiebedingungen. Die Batteriegarantie bei Plug-in Hybriden beträgt 8 Jahre oder 160.000 km.</p>
+        </div>
+      </div>
+
+      <div class="footer-emissions">
+        <p><strong>Verbrauchswerte nach WLTP (gewichtet, kombiniert):</strong><br>
+        <strong>Outlander Diamant:</strong> Energieverbrauch 16 kWh/100 km &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B. Bei entladener Batterie: 6,8 l/100 km; CO₂-Klasse E.<br>
+        <strong>Outlander Black:</strong> Energieverbrauch 16 kWh/100 km &amp; 2,7 l/100 km Benzin; CO₂-Emission 60 g/km; CO₂-Klasse B. Bei entladener Batterie: 6,8 l/100 km; CO₂-Klasse E.<br>
+        <strong>ASX Diamant:</strong> Energieverbrauch 14,8 kWh/100 km &amp; 1,3 l/100 km Benzin; CO₂-Emission 30 g/km; CO₂-Klasse A. Bei entladener Batterie: 5,4 l/100 km; CO₂-Klasse D.<br>
+        <strong>Grandis Diamant:</strong> Kraftstoffverbrauch kombiniert 5,6 l/100 km; CO₂-Emission kombiniert 128 g/km; CO₂-Klasse D.<br>
+        <strong>Eclipse Cross Plug-in Hybrid:</strong> Energieverbrauch 19,3 kWh/100 km &amp; 2,0 l/100 km Benzin; CO₂-Emission 46 g/km; CO₂-Klasse B. Bei entladener Batterie: 6,9 l/100 km; CO₂-Klasse E.<br>
+        <strong>L200:</strong> Die Homologation ist noch nicht abgeschlossen. Offizielle Verbrauchs- und Emissionswerte liegen zur Markteinführung vor.</p>
+      </div>
+
+      <div class="footer-meta">
+        <p>&copy; 2026 MMD Automobile GmbH, Emil-Frey-Straße 2, 61169 Friedberg. Alle Rechte vorbehalten. | <a href="https://www.mitsubishi-motors.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a> | <a href="https://www.mitsubishi-motors.de/datenschutz" target="_blank" rel="noopener noreferrer">Datenschutz</a></p>
+      </div>
+    </div>
+  </footer>
+
+<!-- Scroll-Fortschritt -->
+<div class="scrollbar"><div class="fill" id="spFill"></div></div>
+
+<script>
+/* Reine JS-Animation, keine Abhängigkeit. Smooth scroll-gesteuert. */
+const heroEl = document.getElementById("hero");
+const wow    = document.getElementById("heroWow");
+const slogan = document.getElementById("heroSlogan");
+const hint   = document.getElementById("scrollHint");
+const spFill = document.getElementById("spFill");
+const clamp  = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+let introKilled = false;
+
+// Cache heights and viewport dimensions to prevent layout thrashing (forced reflows)
+let heroHeight = heroEl ? heroEl.offsetHeight : 0;
+let docScrollHeight = document.documentElement.scrollHeight;
+let vh = window.innerHeight;
+
+function cacheHeights() {
+  if (heroEl) heroHeight = heroEl.offsetHeight;
+  docScrollHeight = document.documentElement.scrollHeight;
+  vh = window.innerHeight;
+}
+
+window.addEventListener("load", cacheHeights);
+
+// Performance-optimized direct scroll scrubbing
+let rafId = null;
+
+/* ---- OUTRO: split headline into char spans ---- */
+const outroScroll  = document.getElementById('outro-scroll');
+const outroEl      = document.getElementById('outro');
+const outroSub     = document.getElementById('outro-sub');
+const outroCta     = document.getElementById('outro-cta');
+const outroHL      = document.getElementById('outro-headline');
+let   outroChars   = [];
+
+if (outroHL) {
+  const txt = outroHL.textContent;
+  outroHL.textContent = '';
+  txt.split('').forEach(ch => {
+    const s = document.createElement('span');
+    s.classList.add('char');
+    if (ch === ' ') { s.classList.add('space'); s.textContent = '\u00A0'; }
+    else { s.textContent = ch; }
+    outroHL.appendChild(s);
+    outroChars.push(s);
+  });
+}
+
+function updateOutro(scrollY) {
+  if (!outroScroll || !outroEl) return;
+  const rect  = outroScroll.getBoundingClientRect();
+  // scroll distance inside the container (0 = top of container at viewport top, 200vh = bottom)
+  const scrolled = -rect.top;                      // px scrolled past start
+  const total    = outroScroll.offsetHeight - vh;  // 200vh in px
+  const p = Math.max(0, Math.min(1, scrolled / total)); // 0→1
+
+  // Background: blue(#1d4ed8) → black(#09080d)
+  const r = Math.round(29  + (9  - 29 ) * p);
+  const g = Math.round(78  + (8  - 78 ) * p);
+  const b = Math.round(216 + (13 - 216) * p);
+  outroEl.style.background = `rgb(${r},${g},${b})`;
+
+  // Chars: reveal from 0% → 60% of scroll
+  const charP = Math.max(0, Math.min(1, p / 0.60));
+  const n = outroChars.length;
+  outroChars.forEach((ch, i) => {
+    // each char gets a window of 2/n width, so they cascade
+    const charStart = i / n;
+    const charEnd   = charStart + 2 / n;
+    const cp = Math.max(0, Math.min(1, (charP - charStart) / (charEnd - charStart)));
+    ch.style.opacity   = cp.toFixed(3);
+    ch.style.transform = `translateY(${((1 - cp) * 0.22).toFixed(3)}em)`;
+  });
+
+  // Sub-text: 55% → 80%
+  const subP = Math.max(0, Math.min(1, (p - 0.55) / 0.25));
+  if (outroSub) outroSub.style.opacity = subP.toFixed(3);
+
+  // CTA: 75% → 95%
+  const ctaP = Math.max(0, Math.min(1, (p - 0.75) / 0.20));
+  if (outroCta) outroCta.style.opacity = ctaP.toFixed(3);
+}
+
+function update(){
+  const scrollY = window.scrollY;
+
+  // HERO: WoW wächst & fadet beim Scrollen (gepinnt). Intro läuft bei prog=0.
+  const range = heroHeight - vh;
+  const prog  = clamp(scrollY / (range||1), 0, 1);
+  const FADE_START = 0.60;   // bis hierhin steht das WoW satt & scharf, dann Ausfaden
+  const FADE_END   = 0.96;   // hier ist das WoW komplett weg (großer Climax kurz vorm Ende)
+
+  if(prog > 0.001){
+    if(!introKilled){
+      if (wow) wow.style.animation = "none";
+      if (slogan) slogan.style.animation = "none";
+      if (hint) hint.style.animation = "none";
+      introKilled = true;
+    }
+    const grow  = 1 + Math.pow(prog, 1.6) * 3.0;                 // bis ~4×
+    const fade  = clamp((prog - FADE_START) / (FADE_END - FADE_START), 0, 1);
+    if (wow) {
+      wow.style.transform = `scale(${grow.toFixed(3)})`;
+      wow.style.opacity   = (1 - fade).toFixed(3);
+    }
+    const hintOut = (1 - clamp(prog / 0.18, 0, 1)).toFixed(3);
+    if (slogan) slogan.style.opacity = hintOut;
+    if (hint) hint.style.opacity   = hintOut;
+  } else {
+    // Reset states when scrolled back to the very top
+    if (introKilled) {
+      introKilled = false;
+      if (wow) {
+        wow.style.transform = "scale(1)";
+        wow.style.opacity   = "1";
+      }
+      if (slogan) slogan.style.opacity = "1";
+      if (hint) hint.style.opacity   = ".9";
+    }
+  }
+
+  // OUTRO scroll-scrub
+  updateOutro(scrollY);
+
+  // Scroll-Fortschritt über die GANZE Seite
+  const max   = docScrollHeight - vh;
+  const total = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
+  spFill.style.setProperty("--sp", total.toFixed(3));
+  spFill.parentElement.style.setProperty("--sb-op", "1");
+
+  rafId = null;
+}
+
+function onScroll(){
+  if (!rafId) {
+    rafId = requestAnimationFrame(update);
+  }
+}
+
+addEventListener("scroll", onScroll, {passive:true});
+
+// Debounced resize handler to prevent layout thrashing
+let resizeTimeout;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    cacheHeights();
+    onScroll();
+  }, 100);
+});
+
+/* --- Preis-Hochzähl-Animation ---
+   Uses performance.now() and requestAnimationFrame with ease-out cubic for a premium experience
+*/
+function animatePrice(el) {
+  const target = parseInt(el.getAttribute("data-target"), 10);
+  if (isNaN(target)) return;
+  
+  const duration = 1200; // 1.2s total count time
+  const startTime = performance.now();
+  
+  function updateNumber(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    
+    // Ease out cubic: f(t) = 1 - (1-t)^3
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(easeProgress * target);
+    
+    el.textContent = current;
+    
+    if (progress < 1) {
+      requestAnimationFrame(updateNumber);
+    } else {
+      el.textContent = target;
+    }
+  }
+  
+  requestAnimationFrame(updateNumber);
+}
+
+/* --- IntersectionObserver für Scroll-Reveals --- */
+const observerOptions = {
+  root: null,
+  rootMargin: "0px -50px -10% -50px", // triggers slightly before elements enter view
+  threshold: 0.15
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("is-visible");
+      
+      // Target price values
+      const priceVals = entry.target.querySelectorAll(".price-val");
+      priceVals.forEach(val => {
+        if (!val.classList.contains("animated")) {
+          val.classList.add("animated");
+          animatePrice(val);
+        }
+      });
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll(".offer").forEach(section => {
+  observer.observe(section);
+});
+
+/* --- WOW Matchmaker Quiz Logic --- */
+let answers = { q1: "", q2: "", q3: "" };
+
+const startBtn = document.getElementById("start-quiz-btn");
+const restartBtn = document.getElementById("restart-quiz-btn");
+const optionCards = document.querySelectorAll(".quiz-option-card");
+
+if (startBtn) {
+  startBtn.addEventListener("click", () => {
+    showStep("q1");
+  });
+}
+
+if (restartBtn) {
+  restartBtn.addEventListener("click", () => {
+    answers = { q1: "", q2: "", q3: "" };
+    showStep("intro");
+  });
+}
+
+optionCards.forEach(card => {
+  card.addEventListener("click", () => {
+    const stepEl = card.closest(".quiz-step");
+    const stepId = stepEl.id;
+    const answer = card.getAttribute("data-answer");
+    
+    if (stepId === "step-q1") {
+      answers.q1 = answer;
+      showStep("q2");
+    } else if (stepId === "step-q2") {
+      answers.q2 = answer;
+      showStep("q3");
+    } else if (stepId === "step-q3") {
+      answers.q3 = answer;
+      showStep("loading");
+      setTimeout(calculateMatch, 1400); // 1.4s delay for calculation feeling
+    }
+  });
+});
+
+function showStep(stepName) {
+  const steps = document.querySelectorAll(".quiz-step");
+  steps.forEach(s => s.classList.remove("active"));
+  document.getElementById(`step-${stepName}`).classList.add("active");
+}
+
+function calculateMatch() {
+  const models = {
+    outlander: {
+      title: "Outlander Diamant",
+      desc: "Ihr perfekter Begleiter für die ganze Familie. Als moderner Plug-in Hybrid bietet er reichlich Platz, maximalen Komfort und ein Premium-Fahrgefühl mit Yamaha Sound.",
+      lease: "ab 189 € / Monat",
+      price: "ab 35.490 €",
+      img: "assets/cars/outlander.png",
+      glow: "rgba(255, 138, 58, 0.25)",
+      cta: "https://www.mitsubishi-motors.de/modelle/outlander-phev"
+    },
+    black: {
+      title: "Outlander Black Edition",
+      desc: "Für alle, die exklusiven Stil und Platz suchen. Die sportlich-dunkle Black Edition kombiniert Plug-in Hybrid-Technologie mit exklusiven schwarzen 20-Zöllern.",
+      lease: "ab 219 € / Monat",
+      price: "ab 40.490 €",
+      img: "assets/cars/outlander.png", // uses outlander.png + tint class
+      glow: "rgba(255, 63, 166, 0.25)",
+      cta: "https://www.mitsubishi-motors.de/modelle/outlander-phev",
+      tint: true
+    },
+    asx: {
+      title: "ASX Diamant",
+      desc: "Kompakt, wendig, spritzig. Perfekt für das urbane Umfeld, einfach zu parken und dank sparsamem Mild-Hybrid-Antrieb hochgradig effizient im Alltag.",
+      lease: "ab 159 € / Monat",
+      price: "ab 26.990 €",
+      img: "assets/cars/asx.png",
+      glow: "rgba(255, 111, 110, 0.25)",
+      cta: "https://www.mitsubishi-motors.de/modelle/asx"
+    },
+    grandis: {
+      title: "Grandis Diamant",
+      desc: "Der ultimative Raumriese. Mit bis zu 7 Sitzen und einem hocheffizienten Vollhybrid-System bringt er Ihre gesamte Familie entspannt und wirtschaftlich an jedes Ziel.",
+      lease: "ab 199 € / Monat",
+      price: "ab 36.990 €",
+      img: "assets/cars/grandis.png",
+      glow: "rgba(178, 59, 224, 0.25)",
+      cta: "https://www.mitsubishi-motors.de/"
+    },
+    eclipse: {
+      title: "Eclipse Cross PHEV",
+      desc: "Das sportliche Coupé-SUV mit Allradantrieb und Plug-in Hybrid. Ideal für Fahrer, die ein markantes Design mit umweltfreundlicher E-Mobilität verbinden möchten.",
+      lease: "ab 179 € / Monat",
+      price: "ab 26.990 €",
+      img: "assets/cars/eclipse-cross.png",
+      glow: "rgba(226, 59, 191, 0.25)",
+      cta: "https://www.mitsubishi-motors.de/modelle/eclipse-cross-phev"
+    },
+    l200: {
+      title: "Der neue L200",
+      desc: "Bereit für jedes Abenteuer. Unser legendäres Pickup-Kraftpaket mit Super Select 4WD-II Allradantrieb, enormer Ladefläche und robuster Langlebigkeit für extreme Einsätze.",
+      lease: "Coming Soon",
+      price: "Details folgen",
+      img: "assets/cars/l200.png",
+      glow: "rgba(99, 102, 241, 0.25)",
+      cta: "https://www.mitsubishi-motors.de/modelle/l200"
+    }
+  };
+
+  let matchedModel = "outlander"; // default
+
+  // Quiz Decision Tree
+  if (answers.q1 === "offroad" || answers.q3 === "compact" && answers.q2 === "diesel") {
+    matchedModel = "l200";
+  } else if (answers.q1 === "urban") {
+    if (answers.q2 === "phev") {
+      matchedModel = "eclipse";
+    } else {
+      matchedModel = answers.q3 === "style" ? "black" : "asx";
+    }
+  } else if (answers.q1 === "family") {
+    if (answers.q2 === "diesel") {
+      matchedModel = "l200";
+    } else if (answers.q2 === "phev") {
+      matchedModel = answers.q3 === "style" ? "black" : "outlander";
+    } else {
+      matchedModel = answers.q3 === "space" ? "grandis" : "asx";
+    }
+  }
+
+  const match = models[matchedModel];
+  document.getElementById("res-title").textContent = match.title;
+  document.getElementById("res-desc").textContent = match.desc;
+  document.getElementById("res-lease").innerHTML = match.lease + "<sup>x</sup>";
+  document.getElementById("res-price").innerHTML = match.price + "<sup>x</sup>";
+  
+  const imgEl = document.getElementById("res-car-img");
+  imgEl.src = match.img;
+  imgEl.alt = match.title;
+  if (match.tint) {
+    imgEl.classList.add("car-black-tint");
+  } else {
+    imgEl.classList.remove("car-black-tint");
+  }
+  
+  document.getElementById("res-glow").style.background = `radial-gradient(circle, ${match.glow} 0%, transparent 68%)`;
+  document.getElementById("res-cta-link").href = match.cta;
+  
+  showStep("result");
+}
+
+// Initial update
+update();
+
+</script>
+</body>
+</html>
+
