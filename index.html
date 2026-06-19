@@ -39,7 +39,7 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 }
 
 /* ---------- HERO (nur WoW; gepinnt, scrubt beim Scrollen) ---------- */
-.hero{ position:relative; width:100%; height:240vh; z-index:2; }
+.hero{ position:relative; width:100%; height:180vh; z-index:2; }
 .hero-sticky{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column;
   align-items:center; justify-content:center; overflow:hidden; }
 .hero-wow{ width:min(460px,64%); will-change:transform,opacity; transform-origin:center center;
@@ -405,7 +405,7 @@ body{ font-family:"MMC",system-ui,Arial,sans-serif; color:#fff; }
 /* ---------- CINEMATIC OUTRO (scroll-pinned) ---------- */
 .outro-scroll-container {
   position: relative;
-  height: 300vh;          /* scroll distance = 2× viewport height */
+  height: 200vh;          /* scroll distance = 1× viewport height */
   z-index: 2;
 }
 .outro {
@@ -1393,9 +1393,7 @@ function updateOutro(scrollY) {
   if (outroCta) outroCta.style.opacity = ctaP.toFixed(3);
 }
 
-function update(){
-  const scrollY = window.scrollY;
-
+function update(scrollY){
   // HERO: WoW wächst & fadet beim Scrollen (gepinnt). Intro läuft bei prog=0.
   const range = heroHeight - vh;
   const prog  = clamp(scrollY / (range||1), 0, 1);
@@ -1439,13 +1437,33 @@ function update(){
   const total = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
   spFill.style.setProperty("--sp", total.toFixed(3));
   spFill.parentElement.style.setProperty("--sb-op", "1");
+}
 
-  rafId = null;
+/* ---- Smoothing: Scroll-Wert wird pro Frame weich nachgezogen (lerp) ----
+   Das entkoppelt die Animation von den groben, ruckartigen Mausrad-Sprüngen,
+   sodass das Scrubbing auch ohne Touchpad-Schwung flüssig läuft.
+   Bei prefers-reduced-motion läuft alles instant (Faktor 1). */
+const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const LERP   = prefersReduced ? 1 : 0.14;   // 0..1 — kleiner = sanfter/träger
+let smoothY  = window.scrollY;
+let running  = false;
+
+function loop(){
+  const targetY = window.scrollY;
+  smoothY += (targetY - smoothY) * LERP;
+  // nah genug → einrasten und Schleife anhalten
+  if (Math.abs(targetY - smoothY) < 0.4) {
+    smoothY = targetY;
+    running = false;
+  }
+  update(smoothY);
+  if (running) rafId = requestAnimationFrame(loop);
 }
 
 function onScroll(){
-  if (!rafId) {
-    rafId = requestAnimationFrame(update);
+  if (!running) {
+    running = true;
+    rafId = requestAnimationFrame(loop);
   }
 }
 
@@ -1667,7 +1685,8 @@ function calculateMatch() {
 }
 
 // Initial update
-update();
+smoothY = window.scrollY;
+update(smoothY);
 
 </script>
 </body>
